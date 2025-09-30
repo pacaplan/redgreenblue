@@ -113,6 +113,7 @@ redgreenblue/
 - [x] Implement basic text input and cursor positioning
 - [x] Add character counting and document size limits (2000 chars)
 - [x] Set up basic styling and layout
+- [x] Set up basic styling and layout (reverted from Tailwind back to StyleSheet)
 
 #### 1.3 State Management Setup
 - [ ] Create Zustand store for document state

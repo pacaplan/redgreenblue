@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, Text } from 'react-native';
+import { View, TextInput, StyleSheet } from 'react-native';
 
 interface TextEditorProps {
   placeholder?: string;
@@ -26,7 +26,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.textInput}
+        style={[styles.textInput, { outlineStyle: 'none' }]}
         value={text}
         onChangeText={handleTextChange}
         onSelectionChange={handleSelectionChange}
@@ -37,11 +37,6 @@ export const TextEditor: React.FC<TextEditorProps> = ({
         textAlignVertical="top"
         autoFocus
       />
-      <View style={styles.footer}>
-        <Text style={styles.characterCount}>
-          {text.length}/{maxLength}
-        </Text>
-      </View>
     </View>
   );
 };
@@ -54,20 +49,15 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 18,
+    lineHeight: 26,
     color: '#333',
+    fontFamily: 'Courier New',
     padding: 0,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  characterCount: {
-    fontSize: 12,
-    color: '#666',
+    borderWidth: 0,
+    borderStyle: 'none',
+    outline: 'none',
+    boxShadow: 'none',
   },
 });
+

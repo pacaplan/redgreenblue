@@ -35,6 +35,7 @@ This is a UI prototype for an AI-powered note-taking app with a color-coded text
 - Zustand for state management
 - AsyncStorage for local persistence
 - React Native Gesture Handler and Reanimated for interactions
+- **ALWAYS use pnpm** for package management (never npm or yarn)
 
 ## Current Phase
 Follow the implementation plan in `mvp-implementation-plan.md` step by step. The plan is organized into phases with specific deliverables. Complete each checkbox item individually before moving to the next. Mark items as completed with an "x" when they are done.
