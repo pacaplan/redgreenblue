@@ -103,16 +103,16 @@ redgreenblue/
 ### Phase 1: Project Setup & Basic Editor (Week 1)
 
 #### 1.1 Project Initialization
-- [ ] Create new Expo project with TypeScript template
-- [ ] Install core dependencies (gesture handler, reanimated, zustand)
-- [ ] Set up basic project structure and navigation
-- [ ] Configure TypeScript and linting
+- [x] Create new Expo project with TypeScript template. Important: use a starter kit to create this 
+- [x] Install core dependencies (gesture handler, reanimated, zustand)
+- [x] Set up basic project structure and navigation
+- [x] Configure TypeScript and linting
 
 #### 1.2 Basic Text Editor
-- [ ] Create plain text editor component with TextInput
-- [ ] Implement basic text input and cursor positioning
-- [ ] Add character counting and document size limits (2000 chars)
-- [ ] Set up basic styling and layout
+- [x] Create plain text editor component with TextInput
+- [x] Implement basic text input and cursor positioning
+- [x] Add character counting and document size limits (2000 chars)
+- [x] Set up basic styling and layout
 
 #### 1.3 State Management Setup
 - [ ] Create Zustand store for document state

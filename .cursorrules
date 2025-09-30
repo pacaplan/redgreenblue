@@ -1,0 +1,55 @@
+# RedGreenBlue Project Rules
+
+## Implementation Philosophy
+
+### Incremental Development
+- Implement ONLY the smallest increment at a time
+- Follow the implementation plan step-by-step, executing only ONE step before stopping
+- Example: If the current step is "Create new Expo project with TypeScript template", do ONLY that step and stop - do NOT proceed to install dependencies
+- Wait for explicit confirmation before moving to the next step
+
+### Minimal Implementation
+- Implement ONLY what is explicitly specified in the plan
+- Do not make assumptions about requirements or technical design
+- If something is unclear or ambiguous, ASK for clarification before proceeding
+- Do not add features, optimizations, or improvements that aren't explicitly requested
+
+### Code Simplicity
+- Minimize the amount of code written
+- Prefer simplicity over complexity
+- Before implementing any generic feature, check if there's an off-the-shelf solution available
+- Use existing libraries and tools when possible rather than building from scratch
+
+## Project Context
+
+This is a UI prototype for an AI-powered note-taking app with a color-coded text system:
+- Blue: New text input
+- Yellow: User-marked AI prompts (double-tap blue text)
+- Red: Original text during AI processing
+- Green: AI suggestions
+- White: Accepted AI suggestions
+
+## Tech Stack
+- Expo with React Native
+- TypeScript
+- Zustand for state management
+- AsyncStorage for local persistence
+- React Native Gesture Handler and Reanimated for interactions
+
+## Current Phase
+Follow the implementation plan in `mvp-implementation-plan.md` step by step. The plan is organized into phases with specific deliverables. Complete each checkbox item individually before moving to the next. Mark items as completed with an "x" when they are done.
+
+## Development Rules
+1. Read the implementation plan before starting any work
+2. Execute only the current step/checkbox item
+3. **ALWAYS mark completed steps in `docs/mvp-implementation-plan.md` by changing `[ ]` to `[x]`**
+4. Ask for confirmation before proceeding to the next step
+5. Use existing React Native/Expo patterns and components
+6. Keep all code simple and readable
+7. Test each increment before moving forward
+
+## Progress Tracking
+- **CRITICAL**: After completing ANY step, immediately update `docs/mvp-implementation-plan.md`
+- Change `- [ ]` to `- [x]` for completed items
+- This keeps the implementation plan synchronized with actual progress
+- Do NOT proceed to the next step without marking the current step as complete
