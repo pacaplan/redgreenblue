@@ -44,7 +44,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingVertical: 32,
+    paddingHorizontal: 16,
     backgroundColor: '#fff',
   },
   textInput: {
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 26,
     color: '#333',
-    fontFamily: 'Courier New',
+    fontFamily: 'monospace',
     padding: 0,
     borderWidth: 0,
     borderStyle: 'none',
