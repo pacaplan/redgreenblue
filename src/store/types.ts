@@ -1,4 +1,5 @@
-// TypeScript definitions for stores - to be implemented
-export type StoreTypes = {
-  // Store type definitions
-};
+// Document store types
+export interface DocumentState {
+  text: string;
+  setText: (text: string) => void;
+}
