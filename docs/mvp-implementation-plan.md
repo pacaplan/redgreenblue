@@ -116,8 +116,8 @@ redgreenblue/
 
 #### 1.3 State Management Setup
 - [x] Create Zustand store for document state
-- [ ] Implement text content state management
-- [ ] Add basic local persistence with AsyncStorage
+- [x] Implement text content state management
+- [x] Add basic local persistence with AsyncStorage
 - [ ] Create document auto-save functionality
 
 **Deliverable**: Basic text editor that can input, edit, and persist text locally

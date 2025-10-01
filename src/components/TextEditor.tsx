@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
+import { useDocumentStore } from '../store/documentStore';
 
 interface TextEditorProps {
   placeholder?: string;
@@ -10,7 +11,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   placeholder = 'Start typing...',
   maxLength = 2000,
 }) => {
-  const [text, setText] = useState('');
+  const text = useDocumentStore((state) => state.text);
+  const setText = useDocumentStore((state) => state.setText);
   const [selection, setSelection] = useState({ start: 0, end: 0 });
 
   const handleTextChange = (newText: string) => {
