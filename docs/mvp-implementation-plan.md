@@ -124,24 +124,80 @@ redgreenblue/
 
 ### Phase 2: Color System & Manual Prompt Marking (Week 2)
 
-#### 2.1 User can add new text to the document and see it highlighted in blue
-- [ ] Define color state types (blue, yellow, red, green, white)
-- [ ] Implement text span data structure for color tracking
-- [ ] Create custom TextInput with colored text spans
-- [ ] Implement real-time blue color highlighting during typing
-- [ ] Handle color inheritance for new text input
-- [ ] Add color state persistence to local storage
+**Design Approach** (Simplified):
+- Text spans display with inline background highlights (not full-width)
+- Highlights have slightly rounded corners and padding around text
+- Uses standard TextInput with nested styled Text components
+- Much simpler than dual-layer architecture while maintaining core functionality
 
-**Deliverable**: User can type text and see it appear highlighted in blue
+**Technical Approach**:
+Single TextInput with styled Text spans - leverages React Native's built-in text styling capabilities.
 
-#### 2.2 User can double-tap blue text to toggle it to yellow (mark as AI prompt)
-- [ ] Implement double-tap detection for blue/yellow text
-- [ ] Add color toggle functionality (blue ↔ yellow)
-- [ ] Create visual feedback for double-tap recognition
-- [ ] Add haptic feedback for color changes
-- [ ] Create smooth color transition animations
+#### 2.1 Core Data Model & Color System
+- [x] Define color state types (blue, yellow, red, green, white)
+- [x] Implement text span data structure:
+  - Each span: `{ text: string, color: ColorState, id: string }`
+  - Spans stored as array in document state
+  - New text creates new blue spans (separated by word boundaries or user-defined breaks)
+- [x] Add color state persistence to local storage
+- [x] Define color constants with exact hex values from design system
 
-**Deliverable**: User can double-tap blue text to mark it as yellow prompts
+**Deliverable**: Data model ready to support colored text spans
+
+#### 2.2 Styled TextInput with Colored Text Spans
+- [ ] Create enhanced TextEditor component using standard TextInput
+- [ ] Implement text span rendering within TextInput:
+  - Map over text span array to create nested Text components
+  - Apply inline styles to each Text span:
+    - `backgroundColor` based on span color
+    - `borderRadius: 4` for rounded corners
+    - `paddingHorizontal: 4, paddingVertical: 2` for text padding
+    - Maintain text flow and wrapping
+- [ ] Implement real-time blue highlighting for new text:
+  - New characters get added to current span or create new blue span
+  - Handle span boundary logic (spaces, punctuation, or manual breaks)
+- [ ] Ensure native text editing behavior works (cursor, selection, copy/paste)
+
+**Deliverable**: User can type text and see it appear with inline blue highlights
+
+#### 2.3 Text Span Management
+- [ ] Implement text-to-spans parsing logic:
+  - Convert TextInput changes into spans array updates
+  - Maintain span boundaries during editing
+  - Handle backspace across span boundaries
+  - Preserve span colors when text is edited within spans
+- [ ] Add span creation strategies:
+  - Option A: Word-based spans (each word is a span)
+  - Option B: Sentence-based spans (periods create new spans)
+  - Option C: Manual spans (user gesture creates span break)
+- [ ] Test editing behavior across different span configurations
+
+**Deliverable**: Robust text span management with preserved colors during editing
+
+#### 2.4 Double-Tap to Toggle Blue → Yellow
+- [ ] Implement double-tap gesture detection on Text span components:
+  - Use `react-native-gesture-handler` TapGestureHandler on individual Text spans
+  - Configure for `numberOfTaps={2}`
+  - Only enable on blue and yellow spans
+- [ ] Add color toggle functionality:
+  - Find tapped span by id or text position
+  - Update span color: blue ↔ yellow
+  - Update Zustand store and re-render
+- [ ] Add visual feedback for double-tap recognition
+- [ ] Add haptic feedback on successful toggle
+- [ ] Handle gesture conflicts with text selection
+
+**Deliverable**: User can double-tap blue text spans to toggle them to yellow
+
+#### 2.5 Polish & Testing
+- [ ] Verify inline highlights look good with rounded corners and padding
+- [ ] Test with multiple spans of varying lengths and colors
+- [ ] Test text wrapping behavior within and across spans
+- [ ] Ensure text selection works across multiple colored spans
+- [ ] Add smooth color transition animations (optional enhancement)
+- [ ] Test edge cases: empty spans, very long spans, special characters
+
+**Deliverable**: Phase 2 complete - functional inline text highlighting with color toggling
 
 ### Phase 3: AI Invocation & Processing (Week 3)
 
