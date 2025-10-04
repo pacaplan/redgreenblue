@@ -122,26 +122,39 @@ redgreenblue/
 
 **Deliverable**: Basic text editor that can input, edit, and persist text locally
 
-### Phase 2: Color System & Manual Prompt Marking (Week 2)
+### Phase 2: Multi-Input Architecture & Color System (Week 2)
 
-#### 2.1 User can add new text to the document and see it highlighted in blue
+#### 2.1 Implement one-text-input-per-span architecture
+- [ ] Define text span data structure (id, content, color, order)
+- [ ] Create array-based state management for multiple text inputs
+- [ ] Implement TextSpanInput component (individual text input with full-width, multiline)
+- [ ] Set up dynamic row height based on content (starts at 1 row, grows as text wraps)
+- [ ] Add vertical spacing between text inputs (non-highlighted gaps)
+- [ ] Implement return key handler to create new text span below current one
+- [ ] Add focus management (auto-focus new span on creation)
+- [ ] Handle cursor positioning when creating new spans (content after cursor moves to new span)
+
+**Deliverable**: Page loads with single text input that grows vertically. Pressing return creates a new text input below with proper spacing.
+
+#### 2.2 Add color highlighting to text inputs
 - [ ] Define color state types (blue, yellow, red, green, white)
-- [ ] Implement text span data structure for color tracking
-- [ ] Create custom TextInput with colored text spans
-- [ ] Implement real-time blue color highlighting during typing
-- [ ] Handle color inheritance for new text input
+- [ ] Apply background color to each TextSpanInput based on its color state
+- [ ] Implement real-time blue color highlighting for new text spans
+- [ ] Ensure gaps between inputs remain unhighlighted
 - [ ] Add color state persistence to local storage
+- [ ] Handle color inheritance for newly created spans (default to blue)
 
-**Deliverable**: User can type text and see it appear highlighted in blue
+**Deliverable**: User can type text in multiple inputs and see each highlighted in blue with unhighlighted spacing between them
 
-#### 2.2 User can double-tap blue text to toggle it to yellow (mark as AI prompt)
-- [ ] Implement double-tap detection for blue/yellow text
+#### 2.3 User can double-tap a text span to toggle it to yellow (mark as AI prompt)
+- [ ] Implement double-tap detection on TextSpanInput components
 - [ ] Add color toggle functionality (blue ↔ yellow)
 - [ ] Create visual feedback for double-tap recognition
 - [ ] Add haptic feedback for color changes
 - [ ] Create smooth color transition animations
+- [ ] Ensure double-tap doesn't interfere with text editing
 
-**Deliverable**: User can double-tap blue text to mark it as yellow prompts
+**Deliverable**: User can double-tap blue text spans to mark them as yellow prompts
 
 ### Phase 3: AI Invocation & Processing (Week 3)
 
