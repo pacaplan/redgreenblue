@@ -228,15 +228,15 @@ If user double-taps the first wrapped line, ALL of "This is a really cool typing
 **Deliverable**: Text is broken into line-based spans with proper text wrapping support
 
 #### 2.4 Double-Tap to Toggle Blue → Yellow
-- [ ] Implement double-tap gesture detection on Text span components:
+- [x] Implement double-tap gesture detection on Text span components:
   - Use `react-native-gesture-handler` TapGestureHandler on individual Text spans
   - Configure for `numberOfTaps={2}`
   - Only enable on blue and yellow spans
-- [ ] Add color toggle functionality:
+- [x] Add color toggle functionality:
   - Find tapped span by id or text position
   - Update span color: blue ↔ yellow
   - Update Zustand store and re-render
-- [ ] Test: Double-tap wrapped text → entire logical line toggles color
+- [x] Test: Double-tap wrapped text → entire logical line toggles color
 
 **Deliverable**: User can double-tap blue text spans to toggle them to yellow
 

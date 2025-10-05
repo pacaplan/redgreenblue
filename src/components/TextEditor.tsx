@@ -107,7 +107,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.editorSurface}>
-        <View style={[styles.displayLayer, { pointerEvents: 'none' }]}>
+        <View style={[styles.displayLayer, { pointerEvents: 'box-none' }]}>
           <ColoredText
             spans={textSpans.length > 0 ? textSpans : []}
             style={styles.displayText}
