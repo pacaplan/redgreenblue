@@ -224,7 +224,6 @@ If user double-taps the first wrapped line, ALL of "This is a really cool typing
 - [x] Type multiple lines separated by Enter → multiple spans
 - [x] Edit text within a span → span updates, color preserved
 - [x] Backspace at start of line → merges with previous span
-- [ ] Double-tap wrapped text → entire logical line toggles color (tested in 2.4)
 
 **Deliverable**: Text is broken into line-based spans with proper text wrapping support
 
@@ -237,6 +236,7 @@ If user double-taps the first wrapped line, ALL of "This is a really cool typing
   - Find tapped span by id or text position
   - Update span color: blue ↔ yellow
   - Update Zustand store and re-render
+- [ ] Test: Double-tap wrapped text → entire logical line toggles color
 
 **Deliverable**: User can double-tap blue text spans to toggle them to yellow
 

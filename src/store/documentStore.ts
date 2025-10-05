@@ -33,7 +33,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   },
   
   setTextSpans: (spans: TextSpan[]) => {
-    const textFromSpans = spans.map((span) => span.text).join('');
+    const textFromSpans = spans.map((span) => span.text).join('\n');
     set({ textSpans: spans, text: textFromSpans });
     scheduleSave(() => {
       storage.saveTextSpans(spans);
@@ -86,7 +86,7 @@ storage.loadDocument().then((savedText) => {
 // Load persisted text spans on app start
 storage.loadTextSpans().then((savedSpans) => {
   if (savedSpans !== null) {
-    const textFromSpans = savedSpans.map((span) => span.text).join('');
+    const textFromSpans = savedSpans.map((span) => span.text).join('\n');
     useDocumentStore.setState({ textSpans: savedSpans, text: textFromSpans });
   }
 });

@@ -6,6 +6,7 @@ import {
   NativeSyntheticEvent,
   TextInputSelectionChangeEventData,
   TextStyle,
+  ViewStyle,
 } from 'react-native';
 import { useDocumentStore } from '../store/documentStore';
 import { ColoredText } from './ColoredText';
@@ -55,24 +56,35 @@ export const TextEditor: React.FC<TextEditorProps> = ({
       return;
     }
 
-    const spanId = currentSpanIdRef.current ?? `span_${Date.now()}`;
-    currentSpanIdRef.current = spanId;
-
-    const existingSpan = textSpans.find((span) => span.id === spanId);
-    const updatedSpan: TextSpan = {
-      id: spanId,
-      text: newText,
-      color: existingSpan?.color ?? 'blue',
-    };
-
-    if (textSpans.length === 1 && textSpans[0].id === spanId) {
-      const currentSpan = textSpans[0];
-      if (currentSpan.text !== newText || currentSpan.color !== updatedSpan.color) {
-        setTextSpans([updatedSpan]);
+    // Split new text into lines
+    const newLines = newText.split('\n');
+    const oldLines = text.split('\n');
+    
+    // Build new spans array, preserving IDs and colors where possible
+    const newSpans: TextSpan[] = [];
+    
+    for (let i = 0; i < newLines.length; i++) {
+      const lineText = newLines[i];
+      const existingSpan = textSpans[i];
+      
+      // If we have an existing span at this position, preserve its ID and color
+      if (existingSpan) {
+        newSpans.push({
+          id: existingSpan.id,
+          text: lineText,
+          color: existingSpan.color,
+        });
+      } else {
+        // New line added - create new span with blue color
+        newSpans.push({
+          id: `span_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          text: lineText,
+          color: 'blue',
+        });
       }
-    } else {
-      setTextSpans([updatedSpan]);
     }
+
+    setTextSpans(newSpans);
   };
 
   const handleSelectionChange = (
@@ -95,7 +107,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.editorSurface}>
-        <View pointerEvents="none" style={styles.displayLayer}>
+        <View style={[styles.displayLayer, { pointerEvents: 'none' }]}>
           <ColoredText
             spans={textSpans.length > 0 ? textSpans : []}
             style={styles.displayText}
@@ -105,8 +117,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({
         </View>
         <TextInput
           style={[
-            transparentTextInputStyle,
             StyleSheet.absoluteFill,
+            transparentTextInputStyle,
           ]}
           value={text}
           onChangeText={handleTextChange}
@@ -144,27 +156,24 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
   editorSurface: {
-    borderColor: UI_COLORS.transparent,
-    borderStyle: 'none',
     borderWidth: 0,
     flex: 1,
-    outline: 'none',
     position: 'relative',
-  },
+  } as ViewStyle,
   textInput: {
-    borderColor: UI_COLORS.transparent,
-    borderRadius: 0,
-    borderStyle: 'none',
     borderWidth: 0,
-    boxShadow: 'none',
+    borderColor: 'transparent',
     color: UI_COLORS.textPrimary,
     flex: 1,
     fontFamily: 'monospace',
     fontSize: 18,
     lineHeight: 26,
+    padding: 0,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    // @ts-ignore - Web-specific styles
     outline: 'none',
     outlineWidth: 0,
-    padding: 0,
   },
 });
 

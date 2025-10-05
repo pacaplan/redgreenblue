@@ -25,19 +25,21 @@ export const ColoredText: React.FC<ColoredTextProps> = ({
 
   return (
     <Text style={[styles.baseText, style]}>
-      {spans.map((span) => (
-        <Text
-          key={span.id}
-          style={[
-            styles.span,
-            {
-              backgroundColor: SPAN_COLORS[span.color],
-              color: SPAN_TEXT_COLORS[span.color],
-            },
-          ]}
-        >
-          {span.text}
-        </Text>
+      {spans.map((span, index) => (
+        <React.Fragment key={span.id}>
+          <Text
+            style={[
+              styles.span,
+              {
+                backgroundColor: SPAN_COLORS[span.color],
+                color: SPAN_TEXT_COLORS[span.color],
+              },
+            ]}
+          >
+            {span.text}
+          </Text>
+          {index < spans.length - 1 && '\n'}
+        </React.Fragment>
       ))}
     </Text>
   );
