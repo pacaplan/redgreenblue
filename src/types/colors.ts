@@ -17,15 +17,6 @@ export const COLORS = {
   white: '#FFFFFF', // White for accepted AI suggestions
 } as const;
 
-// Background colors for text spans (slightly more saturated for visibility)
-export const SPAN_COLORS = {
-  blue: '#87CEEB', // Sky blue
-  yellow: '#FFEB3B', // Bright yellow
-  red: '#FF8A80', // Light red
-  green: '#81C784', // Light green
-  white: 'transparent', // No background for white text
-} as const;
-
 // Text colors and UI chroma values
 export const UI_COLORS = {
   background: '#FFFFFF',
@@ -35,6 +26,15 @@ export const UI_COLORS = {
   textPrimary: '#111111',
   textSecondary: '#333333',
   transparent: 'transparent',
+} as const;
+
+// Background colors for text spans (lighter highlights)
+export const SPAN_COLORS = {
+  blue: '#D6ECFF',
+  yellow: '#FFF6CC',
+  red: '#FFE3E8',
+  green: '#DFF7E3',
+  white: UI_COLORS.transparent,
 } as const;
 
 export const SPAN_TEXT_COLORS: Record<ColorState, string> = {

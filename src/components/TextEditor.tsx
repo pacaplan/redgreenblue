@@ -104,7 +104,10 @@ export const TextEditor: React.FC<TextEditorProps> = ({
           />
         </View>
         <TextInput
-          style={[transparentTextInputStyle, StyleSheet.absoluteFill]}
+          style={[
+            transparentTextInputStyle,
+            StyleSheet.absoluteFill,
+          ]}
           value={text}
           onChangeText={handleTextChange}
           onSelectionChange={handleSelectionChange}
@@ -141,10 +144,16 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
   editorSurface: {
+    borderColor: UI_COLORS.transparent,
+    borderStyle: 'none',
+    borderWidth: 0,
     flex: 1,
+    outline: 'none',
     position: 'relative',
   },
   textInput: {
+    borderColor: UI_COLORS.transparent,
+    borderRadius: 0,
     borderStyle: 'none',
     borderWidth: 0,
     boxShadow: 'none',
@@ -153,6 +162,8 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 18,
     lineHeight: 26,
+    outline: 'none',
+    outlineWidth: 0,
     padding: 0,
   },
 });
