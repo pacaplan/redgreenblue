@@ -3,13 +3,22 @@ import { DocumentState } from './types';
 import { storage } from '../services/storage';
 import { TextSpan, ColorState } from '../types/colors';
 
+const { setTimeout: scheduleTimeout, clearTimeout: cancelTimeout } = globalThis;
+
 // Debounce timer for auto-save
-let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+let saveTimeout: ReturnType<typeof scheduleTimeout> | null = null;
 const AUTOSAVE_DELAY = 500; // milliseconds
 
 // Generate unique ID for text spans
 const generateSpanId = (): string => {
   return `span_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+const scheduleSave = (callback: () => void) => {
+  if (saveTimeout) {
+    cancelTimeout(saveTimeout);
+  }
+  saveTimeout = scheduleTimeout(callback, AUTOSAVE_DELAY);
 };
 
 export const useDocumentStore = create<DocumentState>((set, get) => ({
@@ -18,28 +27,18 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   
   setText: (text: string) => {
     set({ text });
-    
-    // Clear existing timeout
-    if (saveTimeout) {
-      clearTimeout(saveTimeout);
-    }
-    
-    // Set new timeout for auto-save
-    saveTimeout = setTimeout(() => {
+    scheduleSave(() => {
       storage.saveDocument(text);
-    }, AUTOSAVE_DELAY);
+    });
   },
   
   setTextSpans: (spans: TextSpan[]) => {
-    set({ textSpans: spans });
-    
-    // Auto-save spans
-    if (saveTimeout) {
-      clearTimeout(saveTimeout);
-    }
-    saveTimeout = setTimeout(() => {
+    const textFromSpans = spans.map((span) => span.text).join('');
+    set({ textSpans: spans, text: textFromSpans });
+    scheduleSave(() => {
       storage.saveTextSpans(spans);
-    }, AUTOSAVE_DELAY);
+      storage.saveDocument(textFromSpans);
+    });
   },
   
   addTextSpan: (text: string, color: ColorState = 'blue') => {
@@ -87,6 +86,7 @@ storage.loadDocument().then((savedText) => {
 // Load persisted text spans on app start
 storage.loadTextSpans().then((savedSpans) => {
   if (savedSpans !== null) {
-    useDocumentStore.setState({ textSpans: savedSpans });
+    const textFromSpans = savedSpans.map((span) => span.text).join('');
+    useDocumentStore.setState({ textSpans: savedSpans, text: textFromSpans });
   }
 });

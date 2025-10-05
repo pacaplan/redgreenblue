@@ -145,18 +145,18 @@ Single TextInput with styled Text spans - leverages React Native's built-in text
 **Deliverable**: Data model ready to support colored text spans
 
 #### 2.2 Styled TextInput with Colored Text Spans
-- [ ] Create enhanced TextEditor component using standard TextInput
-- [ ] Implement text span rendering within TextInput:
+- [x] Create enhanced TextEditor component using standard TextInput
+- [x] Implement text span rendering within TextInput:
   - Map over text span array to create nested Text components
   - Apply inline styles to each Text span:
     - `backgroundColor` based on span color
     - `borderRadius: 4` for rounded corners
     - `paddingHorizontal: 4, paddingVertical: 2` for text padding
     - Maintain text flow and wrapping
-- [ ] Implement real-time blue highlighting for new text:
+- [x] Implement real-time blue highlighting for new text:
   - New characters get added to current span or create new blue span
   - Handle span boundary logic (spaces, punctuation, or manual breaks)
-- [ ] Ensure native text editing behavior works (cursor, selection, copy/paste)
+- [x] Ensure native text editing behavior works (cursor, selection, copy/paste)
 
 **Deliverable**: User can type text and see it appear with inline blue highlights
 
