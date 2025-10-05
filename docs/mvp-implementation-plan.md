@@ -160,19 +160,73 @@ Single TextInput with styled Text spans - leverages React Native's built-in text
 
 **Deliverable**: User can type text and see it appear with inline blue highlights
 
-#### 2.3 Text Span Management
-- [ ] Implement text-to-spans parsing logic:
-  - Convert TextInput changes into spans array updates
-  - Maintain span boundaries during editing
-  - Handle backspace across span boundaries
-  - Preserve span colors when text is edited within spans
-- [ ] Add span creation strategies:
-  - Option A: Word-based spans (each word is a span)
-  - Option B: Sentence-based spans (periods create new spans)
-  - Option C: Manual spans (user gesture creates span break)
-- [ ] Test editing behavior across different span configurations
+#### 2.3 Line-Based Text Span Management
 
-**Deliverable**: Robust text span management with preserved colors during editing
+**Current State**: Right now, ALL typed text is stored as a single blue span. User types "hello world" → one span with text "hello world".
+
+**Goal**: Break text into multiple separate spans (one per line) so users can double-tap individual lines to mark them as prompts (yellow).
+
+**Approach: Line-Based Spans**
+- Each logical line = one span (separated by Enter key / `\n` character)
+- A single span can be VERY LONG and wrap to multiple visual lines in the editor
+- Only pressing Enter creates a new span
+- Double-tapping anywhere on a wrapped line toggles the ENTIRE logical line
+
+**Example:**
+```
+Line 1 (Span 1): "This is a really cool typing thing. i like to type" 
+                 [wraps visually but is ONE span]
+[User presses Enter]
+Line 2 (Span 2): "another line here"
+[User presses Enter]
+Line 3 (Span 3): "third line"
+```
+
+If user double-taps the first wrapped line, ALL of "This is a really cool typing thing. i like to type" turns yellow, even though it displays across multiple visual lines.
+
+**Implementation Steps:**
+
+- [ ] **Parse text into line-based spans**
+  - Split input text by `\n` (newline character)
+  - Each segment becomes a separate span
+  - Empty lines create empty spans (preserve line breaks)
+  
+- [ ] **Handle new line creation (Enter key)**
+  - Detect Enter key press in TextInput
+  - Split current span at cursor position
+  - Create new span with text after cursor
+  - Insert `\n` between spans
+  
+- [ ] **Handle editing within a line**
+  - Identify which span the cursor is in (based on character position)
+  - Update only that span's text when user types
+  - Preserve the span's color (blue or yellow)
+  
+- [ ] **Handle backspace at start of line (merge spans)**
+  - Detect cursor at position 0 of a span
+  - When backspace pressed, merge current span with previous span
+  - Remove the `\n` between them
+  - Preserve color of first span
+
+- [ ] **Handle text wrapping display**
+  - Ensure ColoredText component allows text wrapping within spans
+  - Long spans should wrap naturally to multiple visual lines
+  - No special handling needed (React Native Text wraps by default)
+
+- [ ] **Preserve colors during all operations**
+  - When editing a blue span → stays blue
+  - When editing a yellow span → stays yellow
+  - When merging spans → keep color of first/surviving span
+
+**Testing Scenarios:**
+- [ ] Type a long line that wraps → single span, wraps visually
+- [ ] Press Enter mid-line → splits into two spans
+- [ ] Type multiple lines separated by Enter → multiple spans
+- [ ] Edit text within a span → span updates, color preserved
+- [ ] Backspace at start of line → merges with previous span
+- [ ] Double-tap wrapped text → entire logical line toggles color (tested in 2.4)
+
+**Deliverable**: Text is broken into line-based spans with proper text wrapping support
 
 #### 2.4 Double-Tap to Toggle Blue → Yellow
 - [ ] Implement double-tap gesture detection on Text span components:
