@@ -186,44 +186,44 @@ If user double-taps the first wrapped line, ALL of "This is a really cool typing
 
 **Implementation Steps:**
 
-- [ ] **Parse text into line-based spans**
+- [x] **Parse text into line-based spans**
   - Split input text by `\n` (newline character)
   - Each segment becomes a separate span
   - Empty lines create empty spans (preserve line breaks)
   
-- [ ] **Handle new line creation (Enter key)**
+- [x] **Handle new line creation (Enter key)**
   - Detect Enter key press in TextInput
   - Split current span at cursor position
   - Create new span with text after cursor
   - Insert `\n` between spans
   
-- [ ] **Handle editing within a line**
+- [x] **Handle editing within a line**
   - Identify which span the cursor is in (based on character position)
   - Update only that span's text when user types
   - Preserve the span's color (blue or yellow)
   
-- [ ] **Handle backspace at start of line (merge spans)**
+- [x] **Handle backspace at start of line (merge spans)**
   - Detect cursor at position 0 of a span
   - When backspace pressed, merge current span with previous span
   - Remove the `\n` between them
   - Preserve color of first span
 
-- [ ] **Handle text wrapping display**
+- [x] **Handle text wrapping display**
   - Ensure ColoredText component allows text wrapping within spans
   - Long spans should wrap naturally to multiple visual lines
   - No special handling needed (React Native Text wraps by default)
 
-- [ ] **Preserve colors during all operations**
+- [x] **Preserve colors during all operations**
   - When editing a blue span → stays blue
   - When editing a yellow span → stays yellow
   - When merging spans → keep color of first/surviving span
 
 **Testing Scenarios:**
-- [ ] Type a long line that wraps → single span, wraps visually
-- [ ] Press Enter mid-line → splits into two spans
-- [ ] Type multiple lines separated by Enter → multiple spans
-- [ ] Edit text within a span → span updates, color preserved
-- [ ] Backspace at start of line → merges with previous span
+- [x] Type a long line that wraps → single span, wraps visually
+- [x] Press Enter mid-line → splits into two spans
+- [x] Type multiple lines separated by Enter → multiple spans
+- [x] Edit text within a span → span updates, color preserved
+- [x] Backspace at start of line → merges with previous span
 - [ ] Double-tap wrapped text → entire logical line toggles color (tested in 2.4)
 
 **Deliverable**: Text is broken into line-based spans with proper text wrapping support
@@ -237,13 +237,13 @@ If user double-taps the first wrapped line, ALL of "This is a really cool typing
   - Find tapped span by id or text position
   - Update span color: blue ↔ yellow
   - Update Zustand store and re-render
-- [ ] Add visual feedback for double-tap recognition
-- [ ] Add haptic feedback on successful toggle
-- [ ] Handle gesture conflicts with text selection
 
 **Deliverable**: User can double-tap blue text spans to toggle them to yellow
 
 #### 2.5 Polish & Testing
+- [ ] Add visual feedback for double-tap recognition
+- [ ] Add haptic feedback on successful toggle
+- [ ] Handle gesture conflicts with text selection
 - [ ] Verify inline highlights look good with rounded corners and padding
 - [ ] Test with multiple spans of varying lengths and colors
 - [ ] Test text wrapping behavior within and across spans
