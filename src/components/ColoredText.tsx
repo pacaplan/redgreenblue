@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, TextStyle, StyleProp } from 'react-native';
+import { View, Text, StyleSheet, TextStyle, StyleProp } from 'react-native';
 import { TextSpan, SPAN_COLORS, UI_COLORS, SPAN_TEXT_COLORS } from '../types/colors';
 
 interface ColoredTextProps {
@@ -28,18 +28,21 @@ export const ColoredText: React.FC<ColoredTextProps> = ({
   }
 
   return (
-    <Text 
-      style={[styles.baseText, style]}
-      // @ts-ignore - includeFontPadding is Android-only
-      includeFontPadding={false}
-    >
+    <View style={styles.container}>
       {spans.map((span, index) => (
-        <React.Fragment key={span.id}>
+        <View
+          key={span.id}
+          style={[
+            styles.spanContainer,
+            {
+              backgroundColor: SPAN_COLORS[span.color],
+            },
+          ]}
+        >
           <Text
             style={[
-              styles.span,
+              styles.spanText,
               {
-                backgroundColor: SPAN_COLORS[span.color],
                 color: SPAN_TEXT_COLORS[span.color],
               },
             ]}
@@ -48,32 +51,31 @@ export const ColoredText: React.FC<ColoredTextProps> = ({
           >
             {span.text}
           </Text>
-          {index < spans.length - 1 && '\n'}
-        </React.Fragment>
+        </View>
       ))}
-    </Text>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+  },
   baseText: {
     color: UI_COLORS.textPrimary,
-    flexWrap: 'wrap',
     fontFamily: 'monospace',
     fontSize: 18,
     lineHeight: 26,
-    // Android-specific fixes for blurry text
-    textShadowColor: 'transparent',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 0,
   },
-  span: {
+  spanContainer: {
     borderRadius: 4,
     paddingHorizontal: 4,
     paddingVertical: 2,
-    // Android-specific fixes for blurry text
-    textShadowColor: 'transparent',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 0,
+    marginBottom: 2,
+  },
+  spanText: {
+    fontFamily: 'monospace',
+    fontSize: 18,
+    lineHeight: 26,
   },
 });
