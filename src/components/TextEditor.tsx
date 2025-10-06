@@ -30,6 +30,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   const toggleSpanColor = useDocumentStore((state) => state.toggleSpanColor);
   const [selection, setSelection] = useState({ start: 0, end: 0 });
   const [buttonPosition, setButtonPosition] = useState({ top: 0, visible: false });
+  const [isSelecting, setIsSelecting] = useState(false);
   const currentSpanIdRef = useRef<string | null>(null);
   const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -120,6 +121,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   ) => {
     const newSelection = event.nativeEvent.selection;
     setSelection(newSelection);
+    const hasSelection = newSelection.start !== newSelection.end;
+    setIsSelecting(hasSelection);
     
     // Hide button immediately when user moves cursor or types
     setButtonPosition(prev => ({ ...prev, visible: false }));
@@ -143,7 +146,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
     // Check if current line can be toggled and is not blank
     const span = textSpans[lineIndex];
     const isLineBlank = !span || span.text.trim().length === 0;
-    const canShow = span && (span.color === 'blue' || span.color === 'yellow') && !isLineBlank;
+    const canShow = !hasSelection && span && (span.color === 'blue' || span.color === 'yellow') && !isLineBlank;
     
     // Show button after 500ms of inactivity
     if (canShow) {
@@ -169,36 +172,39 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   const currentLineIndex = getCurrentLineIndex(selection.start);
   const currentSpan = textSpans[currentLineIndex];
 
-  const transparentTextInputStyle: TextStyle = useMemo(
+  const textInputStyle: TextStyle = useMemo(
     () => ({
       ...styles.textInput,
       backgroundColor: UI_COLORS.transparent,
       caretColor: UI_COLORS.caret,
-      color: UI_COLORS.transparent,
+      color: isSelecting ? UI_COLORS.textPrimary : UI_COLORS.transparent,
       selectionColor: UI_COLORS.selection,
       // Android-specific fixes for blurry text
       textShadowColor: 'transparent',
       textShadowOffset: { width: 0, height: 0 },
       textShadowRadius: 0,
     }),
-    []
+    [isSelecting]
   );
 
   return (
     <View style={styles.container}>
       <View style={styles.editorSurface}>
-        <View style={[styles.displayLayer, { pointerEvents: 'box-none' }]}>
-          <ColoredText
-            spans={textSpans.length > 0 ? textSpans : []}
-            style={styles.displayText}
-            placeholder={placeholder}
-            placeholderColor={UI_COLORS.placeholder}
-          />
-        </View>
+        {!isSelecting && (
+          <View style={[styles.displayLayer, { pointerEvents: 'box-none' }]}
+          >
+            <ColoredText
+              spans={textSpans.length > 0 ? textSpans : []}
+              style={styles.displayText}
+              placeholder={placeholder}
+              placeholderColor={UI_COLORS.placeholder}
+            />
+          </View>
+        )}
         <TextInput
           style={[
             StyleSheet.absoluteFill,
-            transparentTextInputStyle,
+            textInputStyle,
           ]}
           value={text}
           onChangeText={handleTextChange}

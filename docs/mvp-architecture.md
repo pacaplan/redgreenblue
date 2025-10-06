@@ -147,14 +147,14 @@ jobs:
 **Features**:
 - Plain text editor with cursor positioning
 - Real-time color coding (blue → yellow → red/green → white)
-- Manual prompt marking via double-tap
+- Manual prompt marking via button interface
 - Basic text selection and editing
 - Local document persistence
 
 **Technical Tasks**:
 - Set up React Native project with Expo
 - Implement custom TextInput with color spans
-- Create gesture recognition system
+- Create button-based color toggle interface
 - Build color state management with Zustand
 - Add local storage with AsyncStorage
 
@@ -167,7 +167,7 @@ jobs:
 - Swipe-up gesture to trigger AI processing
 - OpenAI API integration
 - Loading states and progress indicators
-- Accept/reject workflow via taps
+- Accept/reject workflow via buttons
 - Error handling and retry logic
 
 **Technical Tasks**:
@@ -175,7 +175,7 @@ jobs:
 - Implement OpenAI API wrapper
 - Create AI processing state machine
 - Add network error handling
-- Build accept/reject tap handlers
+- Build accept/reject button handlers
 
 **Deliverable**: End-to-end AI editing workflow
 
@@ -252,7 +252,7 @@ jobs:
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
 | **AI API costs spike** | Medium | High | Implement usage caps, multiple AI providers |
-| **Gesture recognition issues** | Low | Medium | Extensive testing, fallback to buttons |
+| **Button discoverability** | Low | Medium | Clear visual affordances, onboarding tutorial |
 | **Performance on older devices** | Medium | Medium | Progressive enhancement, performance monitoring |
 | **App store rejection** | Low | High | Follow guidelines strictly, beta testing |
 

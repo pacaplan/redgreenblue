@@ -10,7 +10,8 @@ This document outlines the implementation plan for a **functional UI prototype**
 - ✅ **Functional UI prototype** with all core interactions
 - ✅ **Expo-based mobile app** running locally
 - ✅ **Complete color system** (blue → yellow → red/green → white)
-- ✅ **Full gesture recognition** (swipe up, tap interactions, double-tap)
+- ✅ **Button-based controls** (color toggle, accept/reject actions)
+- ✅ **Swipe gesture recognition** (swipe up for AI processing)
 - ✅ **Text selection and editing** with cross-color support
 - ✅ **Stubbed AI processing** with realistic delays and mock responses
 - ✅ **Basic document persistence** (local storage only)
@@ -164,13 +165,13 @@ Single TextInput with styled Text spans - leverages React Native's built-in text
 
 **Current State**: Right now, ALL typed text is stored as a single blue span. User types "hello world" → one span with text "hello world".
 
-**Goal**: Break text into multiple separate spans (one per line) so users can double-tap individual lines to mark them as prompts (yellow).
+**Goal**: Break text into multiple separate spans (one per line) so users can use the toggle button to mark individual lines as prompts (yellow).
 
 **Approach: Line-Based Spans**
 - Each logical line = one span (separated by Enter key / `\n` character)
 - A single span can be VERY LONG and wrap to multiple visual lines in the editor
 - Only pressing Enter creates a new span
-- Double-tapping anywhere on a wrapped line toggles the ENTIRE logical line
+- Toggle button appears when cursor is on a line, clicking it toggles the ENTIRE logical line
 
 **Example:**
 ```
@@ -182,7 +183,7 @@ Line 2 (Span 2): "another line here"
 Line 3 (Span 3): "third line"
 ```
 
-If user double-taps the first wrapped line, ALL of "This is a really cool typing thing. i like to type" turns yellow, even though it displays across multiple visual lines.
+If user clicks the toggle button while cursor is on the first wrapped line, ALL of "This is a really cool typing thing. i like to type" turns yellow, even though it displays across multiple visual lines.
 
 **Implementation Steps:**
 
@@ -244,9 +245,6 @@ If user double-taps the first wrapped line, ALL of "This is a really cool typing
 **Deliverable**: User can toggle blue/yellow text color using a floating button (more reliable than double-tap)
 
 #### 2.5 Polish & Testing
-- [x] ~~Add visual feedback for double-tap recognition~~ (N/A - using button instead)
-- [ ] Add haptic feedback on successful toggle
-- [x] ~~Handle gesture conflicts with text selection~~ (N/A - button doesn't conflict)
 - [x] Verify inline highlights look good with rounded corners and padding
 - [x] Test with multiple spans of varying lengths and colors
 - [x] Test text wrapping behavior within and across spans
@@ -293,26 +291,24 @@ If user double-taps the first wrapped line, ALL of "This is a really cool typing
 
 **Deliverable**: After AI processing, user sees original text in red with AI suggestion in green below
 
-#### 4.2 User can tap red text to reject AI suggestion
-- [ ] Implement single tap detection on red text
-- [ ] Add reject action (red tap → revert to original blue/yellow, delete green)
+#### 4.2 User can click reject button to reject AI suggestion
+- [ ] Implement reject button that appears when AI suggestion is present
+- [ ] Add reject action (button click → revert red to original blue/yellow, delete green)
 - [ ] Create smooth state transitions and animations
-- [ ] Add haptic feedback for reject actions
-- [ ] Handle gesture priority (reject vs cursor positioning)
+- [ ] Position button appropriately in the UI
 
-**Deliverable**: User can reject AI suggestions by tapping red text
+**Deliverable**: User can reject AI suggestions by clicking the reject button
 
 ### Phase 5: Accept Workflow & Text Editing (Week 5)
 
-#### 5.1 User can tap green text to accept AI suggestion
-- [ ] Implement single tap detection on green text
-- [ ] Add accept action (green tap → white, delete red)
+#### 5.1 User can click accept button to accept AI suggestion
+- [ ] Implement accept button that appears when AI suggestion is present
+- [ ] Add accept action (button click → green becomes white, delete red)
 - [ ] Create smooth state transitions and animations
-- [ ] Add haptic feedback for accept actions
 - [ ] Add undo functionality for accept/reject actions
 - [ ] Handle multiple AI suggestions in one document
 
-**Deliverable**: User can accept AI suggestions by tapping green text, which becomes white
+**Deliverable**: User can accept AI suggestions by clicking the accept button, which makes green text become white
 
 #### 5.2 User can select and edit text across all color states
 - [ ] Implement text selection with long press
@@ -324,5 +320,23 @@ If user double-taps the first wrapped line, ALL of "This is a really cool typing
 - [ ] Handle editing white text (white → blue when edited)
 
 **Deliverable**: Complete text editing experience with selection and cursor positioning across all colors
+
+### Phase 6: Polish & Optimization (Week 6)
+
+#### 6.1 Haptic Feedback & Animations
+- [ ] Add haptic feedback for toggle button press
+- [ ] Add haptic feedback for accept button press
+- [ ] Add haptic feedback for reject button press
+- [ ] Add smooth color transition animations for all state changes
+- [ ] Optimize animation performance for smooth 60fps experience
+
+#### 6.2 Final Testing & Bug Fixes
+- [ ] Comprehensive testing across all phases
+- [ ] Test on multiple devices (iOS, Android, web)
+- [ ] Performance testing and optimization
+- [ ] Fix any remaining bugs or edge cases
+- [ ] Document known limitations
+
+**Deliverable**: Polished MVP prototype with smooth animations and haptic feedback
 
 

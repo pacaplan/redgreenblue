@@ -35,7 +35,8 @@ The app transforms traditional note-taking by allowing users to write naturally 
 
 ### 2. Manual Prompt Marking Phase (MVP)
 - All text remains **blue** by default
-- User manually marks prompts by **tapping blue text** to change it to **yellow**
+- User manually marks prompts by **clicking the "Mark as Prompt" button** to change blue text to **yellow**
+- Button appears after 500ms of cursor inactivity on blue or yellow lines
 - No automatic AI analysis or prompt detection
 - User has full control over what is treated as content vs. instructions
 
@@ -47,17 +48,17 @@ The app transforms traditional note-taking by allowing users to write naturally 
 
 ### 4. User Decision Phase
 - User reviews AI suggestions
-- **Accept**: Tap green text → becomes white, red text is deleted
-- **Reject**: Tap red text → reverts to previous color (blue/yellow), green text disappears
+- **Accept**: Click "Accept" button → green text becomes white, red text is deleted
+- **Reject**: Click "Reject" button → red text reverts to previous color (blue/yellow), green text disappears
 
 ## Gesture Controls
 
 ### Touch Interactions
 - **Single tap**: Position cursor (standard text editing behavior)
-- **Double tap blue text**: Toggle to yellow (mark as AI prompt)
-- **Double tap yellow text**: Toggle to blue (mark as regular content)
-- **Single tap green text**: Accept AI edit (green→white, delete red)
-- **Single tap red text**: Reject AI edit (red→previous color, delete green)
+- **Button controls**: Context-aware buttons appear for specific actions:
+  - **Toggle Button** (blue/yellow lines): "→ Mark as Prompt" or "→ Mark as Text" button appears after 500ms of cursor inactivity on blue or yellow text
+  - **Accept Button** (green text): "Accept" button appears when AI suggestion is present
+  - **Reject Button** (red text): "Reject" button appears when AI suggestion is present
 - **Three-finger tap**: Undo last action
 
 ### Swipe Gestures
@@ -76,31 +77,29 @@ The app transforms traditional note-taking by allowing users to write naturally 
 - **Cut Behavior**: Cut text is removed, leaving gaps that close automatically
 
 ### Cursor Positioning
-- **Single Tap to Position**: Places cursor within blue, yellow, green, and white text
-- **Double Tap Color Toggle**: On blue/yellow text only (does not position cursor)
-- **Red Text Blocking**: All taps on red text are ignored (no cursor positioning or actions)
+- **Single Tap to Position**: Places cursor within blue, yellow, green, red, and white text
+- **Color Toggle Button**: Appears after 500ms of cursor inactivity on blue/yellow lines
 - **Color Inheritance**: New text typed at cursor inherits the color of surrounding text
 - **Boundary Behavior**: Cursor at color boundaries defaults to the following color
 - **Editing White Text**: Any edit to white text immediately changes it to blue
-- **Visual Feedback**: Brief highlight shows double-tap recognition on blue/yellow text
+- **Visual Feedback**: Button appearance indicates available actions for current line
 
 ### Tap Behavior Hierarchy
-The system resolves tap conflicts using this priority order:
+The system uses button-based controls instead of tap-based actions:
 
-1. **Single Tap Priority**:
-   - **Green text**: Accept AI edit (immediate action, no cursor positioning)
-   - **Red text**: Reject AI edit (immediate action, no cursor positioning)
-   - **Blue/Yellow/White text**: Position cursor (standard editing behavior)
+1. **Single Tap**: 
+   - **All text colors**: Position cursor (standard editing behavior)
+   - No immediate actions triggered by tapping text
 
-2. **Double Tap Priority**:
-   - **Blue text**: Toggle to yellow (color change, no cursor positioning)
-   - **Yellow text**: Toggle to blue (color change, no cursor positioning)
-   - **Green/Red/White text**: No action (double tap ignored)
+2. **Button Interactions**:
+   - **Toggle Button** (blue/yellow): Click to toggle between "Mark as Prompt" and "Mark as Text"
+   - **Accept Button** (green): Click to accept AI suggestion
+   - **Reject Button** (red): Click to reject AI suggestion
 
 3. **Visual Feedback**:
-   - **Single tap on green/red**: Brief color flash + haptic feedback
-   - **Double tap on blue/yellow**: Brief highlight + color change animation
-   - **Invalid double tap**: No feedback (prevents accidental actions)
+   - **Button press**: Standard button press animation + haptic feedback
+   - **Button appearance**: Smooth fade-in after 500ms of cursor inactivity
+   - **Button styling**: Color-coded to match the action (yellow for prompts, blue for text)
 
 ### Gesture Conflict Resolution
 - **Selection Priority**: When text is selected, swipe gestures are disabled
@@ -109,7 +108,7 @@ The system resolves tap conflicts using this priority order:
   - Swipe up → AI processing (only when no selection)
 - **Clear Selection**: Tap empty area to clear selection and re-enable gestures
 - **Selection Indicators**: Clear visual feedback shows when selection mode is active
-- **Double Tap Timing**: 300ms window for double tap detection (iOS standard)
+- **Button Hiding**: Toggle button automatically hides when cursor moves or user types
 
 ## AI Processing States
 
@@ -146,10 +145,11 @@ The system resolves tap conflicts using this priority order:
 **Initial Input:**
 1. **User types**: "milk" + [return] → Text stays **blue**
 2. **User types**: "bananas" + [return] → Text stays **blue**
-3. **User types**: "organize shopping list" + [return] → Text turns **yellow** (AI identifies as prompt)
+3. **User types**: "organize shopping list" + [return] → Text stays **blue**
+4. **User clicks** "→ Mark as Prompt" button on the last line → Text turns **yellow**
 
 **AI Processing:**
-4. **User swipes up**: AI processes
+5. **User swipes up**: AI processes
    - "milk" and "bananas" turn **red**
    - "organize shopping list" turns **red**
    - **Green text appears**:
@@ -162,7 +162,7 @@ The system resolves tap conflicts using this priority order:
      ```
 
 **User Decision:**
-5. **User taps green text**: Accepts the organization
+6. **User clicks "Accept" button**: Accepts the organization
    - Green text becomes **white**
    - All red text disappears
    - **Result**: Organized markdown checklist
@@ -170,10 +170,11 @@ The system resolves tap conflicts using this priority order:
 ### 2. Email Draft Improvement
 **Initial Input:**
 1. **User types**: "Hey Sarah, hope you're doing well. I wanted to reach out about the project deadline. We might need to push it back a few days because of the technical issues we've been having." + [return] → Text stays **blue**
-2. **User types**: "make this more professional" + [return] → Text turns **yellow**
+2. **User types**: "make this more professional" + [return] → Text stays **blue**
+3. **User clicks** "→ Mark as Prompt" button on the last line → Text turns **yellow**
 
 **AI Processing:**
-3. **User swipes up**: AI processes
+4. **User swipes up**: AI processes
    - Original email text turns **red**
    - "make this more professional" turns **red**
    - **Green text appears**:
@@ -191,7 +192,7 @@ The system resolves tap conflicts using this priority order:
      ```
 
 **User Decision:**
-4. **User taps green text**: Accepts the professional version
+5. **User clicks "Accept" button**: Accepts the professional version
    - **Result**: Polished, professional email ready to send
 
 ### 3. Meeting Notes Structuring
@@ -200,10 +201,11 @@ The system resolves tap conflicts using this priority order:
 2. **User types**: "sarah will handle marketing campaign" + [return] → Text stays **blue**
 3. **User types**: "need to follow up on budget by friday" + [return] → Text stays **blue**
 4. **User types**: "john mentioned the new hire starts monday" + [return] → Text stays **blue**
-5. **User types**: "format as meeting minutes" + [return] → Text turns **yellow**
+5. **User types**: "format as meeting minutes" + [return] → Text stays **blue**
+6. **User clicks** "→ Mark as Prompt" button on the last line → Text turns **yellow**
 
 **AI Processing:**
-6. **User swipes up**: AI processes
+7. **User swipes up**: AI processes
    - All previous text turns **red**
    - **Green text appears**:
      ```
@@ -221,7 +223,7 @@ The system resolves tap conflicts using this priority order:
      ```
 
 **User Decision:**
-7. **User taps green text**: Accepts the structured format
+8. **User clicks "Accept" button**: Accepts the structured format
    - **Result**: Professional meeting minutes with clear action items
 
 ### 4. Extended Shopping List - Multiple Interactions & Complex State Management
@@ -267,7 +269,7 @@ This example demonstrates advanced scenarios including multiple AI interactions,
      - [ ] chicken breast
      ```
 
-3. **User taps green text**: Accepts the additions
+3. **User clicks "Accept" button**: Accepts the additions
    - New sections become **white**, red text disappears
 
 **Round 3: Mixed State Processing - Blue and Yellow Throughout Document**
@@ -323,7 +325,7 @@ This example demonstrates advanced scenarios including multiple AI interactions,
      - [ ] olive oil (1 bottle)
      ```
 
-6. **User taps green text**: Accepts all changes
+6. **User clicks "Accept" button**: Accepts all changes
    - **Result**: Comprehensive organized shopping list with quantities
 
 **Round 4: Prompt Before Content & White-to-Blue Transitions**
@@ -382,7 +384,7 @@ This example demonstrates advanced scenarios including multiple AI interactions,
      - [ ] store brand tomato sauce (1 jar)
      ```
 
-9. **User taps green text**: Accepts the budget optimization
+9. **User clicks "Accept" button**: Accepts the budget optimization
    - **Result**: Cost-optimized shopping list with new items properly categorized
 
 **Key Advanced Behaviors Demonstrated:**
@@ -446,9 +448,9 @@ To handle these complex scenarios, the AI system needs sophisticated reasoning c
 
 ### Essential Features
 1. **Plain text editor** with real-time color coding
-2. **Manual prompt marking** (no automatic detection)
+2. **Manual prompt marking** via button interface (no automatic detection)
 3. **Gesture-based AI invocation** (swipe up)
-4. **Accept/reject editing workflow** via taps
+4. **Accept/reject editing workflow** via buttons
 5. **Full color state management** (blue→yellow→red/green→white)
 6. **Text selection and cursor positioning** with cross-color support
 7. **Gesture conflict resolution** (selection mode vs. swipe gestures)
@@ -470,12 +472,14 @@ To handle these complex scenarios, the AI system needs sophisticated reasoning c
 ✅ **Intuitive color system**: Clear visual feedback for different content states  
 ✅ **Natural writing flow**: Users can write normally without interruption  
 ✅ **Simple gestures**: Familiar mobile interaction patterns  
-✅ **Clear decision points**: Accept/reject workflow is straightforward  
-✅ **Flexible prompting**: Users can manually mark prompts or let AI detect them  
+✅ **Clear decision points**: Accept/reject workflow is straightforward via buttons
+✅ **Flexible prompting**: Users can manually mark prompts using discoverable button interface
+✅ **Cross-platform reliability**: Button-based interactions work consistently on mobile, tablet, and web  
 
 ### Potential Concerns (Addressed in MVP)
-⚠️ **Learning curve**: Users need to understand the color system  
-✅ **Manual prompt marking**: Eliminates AI detection accuracy issues (MVP simplification)
+⚠️ **Learning curve**: Users need to understand the color system and button interface
+✅ **Manual prompt marking**: Button-based approach is discoverable and eliminates AI detection accuracy issues
+✅ **Button-based interactions**: More reliable than gesture-based tap detection across platforms
 ⚠️ **Visual complexity**: Multiple colors might feel overwhelming initially  
 ⚠️ **Text selection complexity**: Standard selection behavior unclear with colored text  
 ⚠️ **Error recovery**: Users need clear paths to fix AI mistakes  
@@ -484,11 +488,12 @@ To handle these complex scenarios, the AI system needs sophisticated reasoning c
 
 ### Recommendations for MVP
 1. **Start with core workflow**: Focus on blue→yellow→red/green→white progression
-2. **Include onboarding**: Brief tutorial explaining color system, manual prompt marking, and gestures
-3. **Provide feedback**: Clear visual/haptic feedback for gesture recognition
+2. **Include onboarding**: Brief tutorial explaining color system, button interface, and gestures
+3. **Provide feedback**: Clear visual/haptic feedback for button presses and gesture recognition
 4. **Error recovery**: Easy way to undo AI actions if they go wrong
 5. **Document size indicators**: Show character count approaching limits
 6. **Progressive disclosure**: Hide advanced features initially
+7. **Button discoverability**: Ensure toggle button appears reliably after cursor inactivity
 
 ## Technical Considerations (High-Level)
 

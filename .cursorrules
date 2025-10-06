@@ -24,7 +24,7 @@
 
 This is a UI prototype for an AI-powered note-taking app with a color-coded text system:
 - Blue: New text input
-- Yellow: User-marked AI prompts (double-tap blue text)
+- Yellow: User-marked AI prompts (marked via button interface)
 - Red: Original text during AI processing
 - Green: AI suggestions
 - White: Accepted AI suggestions
@@ -64,3 +64,20 @@ After completing each increment of work:
 - Change `- [ ]` to `- [x]` for completed items
 - This keeps the implementation plan synchronized with actual progress
 - Do NOT proceed to the next step without marking the current step as complete
+
+## Documentation Maintenance
+
+### Keeping Requirements Up to Date
+- **CRITICAL**: If the implementation diverges from the original requirements or specifications, update the documentation to reflect the actual implementation
+- This ensures documentation remains a reliable source of truth
+- Update affected files:
+  - `docs/functional-specification.md` - User-facing features and workflows
+  - `docs/mvp-architecture.md` - Technical architecture and design decisions
+  - `docs/mvp-implementation-plan.md` - Implementation steps and progress
+  - `.cursorrules` - Project context and development guidelines
+- Document the reason for any significant changes from original specifications
+- Examples of changes that require documentation updates:
+  - Changing interaction patterns (e.g., double-tap → button)
+  - Modifying data structures or state management
+  - Adjusting UI/UX behavior
+  - Adding or removing features
