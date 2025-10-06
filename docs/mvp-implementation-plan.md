@@ -227,29 +227,33 @@ If user double-taps the first wrapped line, ALL of "This is a really cool typing
 
 **Deliverable**: Text is broken into line-based spans with proper text wrapping support
 
-#### 2.4 Double-Tap to Toggle Blue → Yellow
-- [x] Implement double-tap gesture detection on Text span components:
-  - Use `react-native-gesture-handler` TapGestureHandler on individual Text spans
-  - Configure for `numberOfTaps={2}`
-  - Only enable on blue and yellow spans
+#### 2.4 Toggle Blue → Yellow
+- [x] ~~Implement double-tap gesture detection on Text span components~~
+  - **Changed approach**: Double-tap on Text components is unreliable on Android/web
+- [x] Implement floating action button for color toggling:
+  - Button appears when cursor is on blue or yellow line
+  - Shows context-aware label ("Mark as Prompt" / "Mark as Text")
+  - Color-coded to show target color
+  - Uses Pressable for reliable cross-platform interaction
 - [x] Add color toggle functionality:
-  - Find tapped span by id or text position
+  - Detect current line based on cursor position
   - Update span color: blue ↔ yellow
   - Update Zustand store and re-render
-- [x] Test: Double-tap wrapped text → entire logical line toggles color
+- [x] Test: Button toggles current line color reliably on all platforms
 
-**Deliverable**: User can double-tap blue text spans to toggle them to yellow
+**Deliverable**: User can toggle blue/yellow text color using a floating button (more reliable than double-tap)
 
 #### 2.5 Polish & Testing
-- [ ] Add visual feedback for double-tap recognition
+- [x] ~~Add visual feedback for double-tap recognition~~ (N/A - using button instead)
 - [ ] Add haptic feedback on successful toggle
-- [ ] Handle gesture conflicts with text selection
-- [ ] Verify inline highlights look good with rounded corners and padding
-- [ ] Test with multiple spans of varying lengths and colors
-- [ ] Test text wrapping behavior within and across spans
+- [x] ~~Handle gesture conflicts with text selection~~ (N/A - button doesn't conflict)
+- [x] Verify inline highlights look good with rounded corners and padding
+- [x] Test with multiple spans of varying lengths and colors
+- [x] Test text wrapping behavior within and across spans
 - [ ] Ensure text selection works across multiple colored spans
 - [ ] Add smooth color transition animations (optional enhancement)
 - [ ] Test edge cases: empty spans, very long spans, special characters
+- [x] Test toggle functionality on Android and web platforms
 
 **Deliverable**: Phase 2 complete - functional inline text highlighting with color toggling
 

@@ -7,10 +7,12 @@ import {
   TextInputSelectionChangeEventData,
   TextStyle,
   ViewStyle,
+  Pressable,
+  Text,
 } from 'react-native';
 import { useDocumentStore } from '../store/documentStore';
 import { ColoredText } from './ColoredText';
-import { TextSpan, UI_COLORS } from '../types/colors';
+import { TextSpan, UI_COLORS, SPAN_COLORS } from '../types/colors';
 
 interface TextEditorProps {
   placeholder?: string;
@@ -25,8 +27,11 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   const textSpans = useDocumentStore((state) => state.textSpans);
   const setText = useDocumentStore((state) => state.setText);
   const setTextSpans = useDocumentStore((state) => state.setTextSpans);
+  const toggleSpanColor = useDocumentStore((state) => state.toggleSpanColor);
   const [selection, setSelection] = useState({ start: 0, end: 0 });
+  const [buttonPosition, setButtonPosition] = useState({ top: 0, visible: false });
   const currentSpanIdRef = useRef<string | null>(null);
+  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Ensure there is at least a default span on initial load
   useEffect(() => {
@@ -42,6 +47,15 @@ export const TextEditor: React.FC<TextEditorProps> = ({
       currentSpanIdRef.current = textSpans[textSpans.length - 1].id;
     }
   }, [text, textSpans, setTextSpans]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleTextChange = (newText: string) => {
     if (newText.length > maxLength) {
@@ -87,11 +101,73 @@ export const TextEditor: React.FC<TextEditorProps> = ({
     setTextSpans(newSpans);
   };
 
+  const getCurrentLineIndex = (cursorPos: number): number => {
+    // Find which line (span) the cursor is currently in
+    const lines = text.split('\n');
+    let charCount = 0;
+    for (let i = 0; i < lines.length; i++) {
+      charCount += lines[i].length;
+      if (cursorPos <= charCount) {
+        return i;
+      }
+      charCount += 1; // Account for '\n'
+    }
+    return Math.max(0, lines.length - 1);
+  };
+
   const handleSelectionChange = (
     event: NativeSyntheticEvent<TextInputSelectionChangeEventData>
   ) => {
-    setSelection(event.nativeEvent.selection);
+    const newSelection = event.nativeEvent.selection;
+    setSelection(newSelection);
+    
+    // Hide button immediately when user moves cursor or types
+    setButtonPosition(prev => ({ ...prev, visible: false }));
+    
+    // Clear any existing timer
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+    }
+    
+    // Calculate button position based on current line
+    const lineIndex = getCurrentLineIndex(newSelection.start);
+    const lineHeight = 26; // Must match styles.displayText.lineHeight
+    const paddingTop = 32; // Must match styles.container.paddingVertical
+    const buttonHeight = 32; // Approximate button height (8px padding * 2 + text)
+    const buttonOffset = 8; // Gap below the line to avoid overlap
+    
+    // Calculate Y position: padding + (lineIndex + 1) * lineHeight + offset
+    // This places it below the next line to avoid covering current line
+    const topPosition = paddingTop + ((lineIndex + 1) * lineHeight) + buttonOffset;
+    
+    // Check if current line can be toggled and is not blank
+    const span = textSpans[lineIndex];
+    const isLineBlank = !span || span.text.trim().length === 0;
+    const canShow = span && (span.color === 'blue' || span.color === 'yellow') && !isLineBlank;
+    
+    // Show button after 500ms of inactivity
+    if (canShow) {
+      inactivityTimerRef.current = setTimeout(() => {
+        setButtonPosition({
+          top: topPosition,
+          visible: true,
+        });
+      }, 500);
+    }
   };
+
+  const handleToggleCurrentLine = () => {
+    const lineIndex = getCurrentLineIndex(selection.start);
+    if (lineIndex >= 0 && lineIndex < textSpans.length) {
+      const span = textSpans[lineIndex];
+      if (span.color === 'blue' || span.color === 'yellow') {
+        toggleSpanColor(span.id);
+      }
+    }
+  };
+
+  const currentLineIndex = getCurrentLineIndex(selection.start);
+  const currentSpan = textSpans[currentLineIndex];
 
   const transparentTextInputStyle: TextStyle = useMemo(
     () => ({
@@ -100,6 +176,10 @@ export const TextEditor: React.FC<TextEditorProps> = ({
       caretColor: UI_COLORS.caret,
       color: UI_COLORS.transparent,
       selectionColor: UI_COLORS.selection,
+      // Android-specific fixes for blurry text
+      textShadowColor: 'transparent',
+      textShadowOffset: { width: 0, height: 0 },
+      textShadowRadius: 0,
     }),
     []
   );
@@ -132,8 +212,27 @@ export const TextEditor: React.FC<TextEditorProps> = ({
           keyboardAppearance="light"
           underlineColorAndroid="transparent"
           scrollEnabled
+          // @ts-ignore - includeFontPadding is Android-only
+          includeFontPadding={false}
         />
       </View>
+      {buttonPosition.visible && currentSpan && (
+        <Pressable
+          style={({ pressed }) => [
+            styles.toggleButton,
+            { 
+              top: buttonPosition.top,
+              backgroundColor: currentSpan.color === 'blue' ? SPAN_COLORS.yellow : SPAN_COLORS.blue,
+              opacity: pressed ? 0.7 : 1,
+            }
+          ]}
+          onPress={handleToggleCurrentLine}
+        >
+          <Text style={styles.toggleButtonText}>
+            {currentSpan.color === 'blue' ? '→ Mark as Prompt' : '→ Mark as Text'}
+          </Text>
+        </Pressable>
+      )}
     </View>
   );
 };
@@ -174,6 +273,23 @@ const styles = StyleSheet.create({
     // @ts-ignore - Web-specific styles
     outline: 'none',
     outlineWidth: 0,
+  },
+  toggleButton: {
+    position: 'absolute',
+    right: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  toggleButtonText: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });
 

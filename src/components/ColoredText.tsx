@@ -1,7 +1,6 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Text, StyleSheet, TextStyle, StyleProp } from 'react-native';
 import { TextSpan, SPAN_COLORS, UI_COLORS, SPAN_TEXT_COLORS } from '../types/colors';
-import { useDocumentStore } from '../store/documentStore';
 
 interface ColoredTextProps {
   spans: TextSpan[];
@@ -16,42 +15,27 @@ export const ColoredText: React.FC<ColoredTextProps> = ({
   placeholder,
   placeholderColor = UI_COLORS.placeholder,
 }) => {
-  const toggleSpanColor = useDocumentStore((state) => state.toggleSpanColor);
-  const lastTapRef = useRef<{ [key: string]: number }>({});
-
-  const handlePress = (spanId: string, spanColor: string) => {
-    // Only enable double-tap on blue and yellow spans
-    if (spanColor !== 'blue' && spanColor !== 'yellow') {
-      return;
-    }
-
-    const now = Date.now();
-    const lastTap = lastTapRef.current[spanId] || 0;
-    const timeDiff = now - lastTap;
-
-    // Double-tap detected (within 300ms)
-    if (timeDiff < 300) {
-      toggleSpanColor(spanId);
-      lastTapRef.current[spanId] = 0; // Reset
-    } else {
-      lastTapRef.current[spanId] = now;
-    }
-  };
-
   if (spans.length === 0) {
     return (
-      <Text style={[styles.baseText, style, { color: placeholderColor }]}>
+      <Text 
+        style={[styles.baseText, style, { color: placeholderColor }]}
+        // @ts-ignore - includeFontPadding is Android-only
+        includeFontPadding={false}
+      >
         {placeholder}
       </Text>
     );
   }
 
   return (
-    <Text style={[styles.baseText, style]}>
+    <Text 
+      style={[styles.baseText, style]}
+      // @ts-ignore - includeFontPadding is Android-only
+      includeFontPadding={false}
+    >
       {spans.map((span, index) => (
         <React.Fragment key={span.id}>
           <Text
-            onPress={() => handlePress(span.id, span.color)}
             style={[
               styles.span,
               {
@@ -59,6 +43,8 @@ export const ColoredText: React.FC<ColoredTextProps> = ({
                 color: SPAN_TEXT_COLORS[span.color],
               },
             ]}
+            // @ts-ignore - includeFontPadding is Android-only
+            includeFontPadding={false}
           >
             {span.text}
           </Text>
@@ -76,10 +62,18 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 18,
     lineHeight: 26,
+    // Android-specific fixes for blurry text
+    textShadowColor: 'transparent',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 0,
   },
   span: {
     borderRadius: 4,
     paddingHorizontal: 4,
     paddingVertical: 2,
+    // Android-specific fixes for blurry text
+    textShadowColor: 'transparent',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 0,
   },
 });
