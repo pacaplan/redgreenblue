@@ -52,12 +52,13 @@ Follow the implementation plan in `mvp-implementation-plan.md` step by step. The
 ## Testing Protocol
 After completing each increment of work:
 1. Ensure the Expo dev server is running on port 8081
-2. Use Chrome DevTools MCP to open and test the app at `http://localhost:8081`
-3. Take a snapshot to verify the UI is rendering correctly
+2. Use Chrome DevTools MCP or Playwright MCP to open and test the app at `http://localhost:8081`
+3. Take a snapshot to verify the UI is rendering correctly (use browser_snapshot, NOT screenshots)
 4. Test basic functionality by interacting with the UI (typing text, clicking elements)
 5. Check the console for any errors or warnings
-6. Take screenshots to document the current state
-8. Only mark the step as complete after successful testing
+6. Only mark the step as complete after successful testing
+
+**IMPORTANT**: Do NOT save screenshots to files. Use `browser_snapshot` for testing, which doesn't save files.
 
 ## Progress Tracking
 - **CRITICAL**: After completing ANY step, immediately update `docs/mvp-implementation-plan.md`

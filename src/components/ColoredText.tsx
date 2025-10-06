@@ -49,7 +49,7 @@ export const ColoredText: React.FC<ColoredTextProps> = ({
             // @ts-ignore - includeFontPadding is Android-only
             includeFontPadding={false}
           >
-            {span.text}
+            {span.text === '' ? '\u200B' : span.text}
           </Text>
         </View>
       ))}
@@ -60,6 +60,8 @@ export const ColoredText: React.FC<ColoredTextProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
+    // Match TextInput's vertical padding so overlay and caret align
+    paddingVertical: 2,
   },
   baseText: {
     color: UI_COLORS.textPrimary,
@@ -70,8 +72,11 @@ const styles = StyleSheet.create({
   spanContainer: {
     borderRadius: 4,
     paddingHorizontal: 4,
-    paddingVertical: 2,
-    marginBottom: 2,
+    // Use no per-line vertical padding or margins to keep the
+    // visual line height identical to TextInput's lineHeight.
+    paddingVertical: 0,
+    marginBottom: 0,
+    minHeight: 26,
   },
   spanText: {
     fontFamily: 'monospace',

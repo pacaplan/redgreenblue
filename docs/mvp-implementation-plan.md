@@ -248,9 +248,9 @@ If user clicks the toggle button while cursor is on the first wrapped line, ALL 
 - [x] Verify inline highlights look good with rounded corners and padding
 - [x] Test with multiple spans of varying lengths and colors
 - [x] Test text wrapping behavior within and across spans
-- [ ] Ensure text selection works across multiple colored spans
+- [x] Ensure text selection works across multiple colored spans
 - [ ] Add smooth color transition animations (optional enhancement)
-- [ ] Test edge cases: empty spans, very long spans, special characters
+- [x] Test edge cases: empty spans, very long spans, special characters
 - [x] Test toggle functionality on Android and web platforms
 
 **Deliverable**: Phase 2 complete - functional inline text highlighting with color toggling
