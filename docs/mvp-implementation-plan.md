@@ -278,38 +278,92 @@ If user clicks the toggle button while cursor is on the first wrapped line, ALL 
 
 **Deliverable**: AI processing completes with contextually relevant mock responses
 
-### Phase 4: AI Result Display (Week 4)
+### Phase 4: AI Result Display & Accept / Reject workflow (Week 4)
 
-#### 4.1 User sees original text in red and AI suggestion in green
-- [ ] Implement red/green text display after AI processing
-- [ ] Handle text layout for original (red) + suggestion (green)
-- [ ] Add proper text positioning and spacing
-- [ ] Create visual hierarchy for decision making
-- [ ] Add smooth color transition animations (blue/yellow → red, show green)
-- [ ] Handle yellow prompt text removal (yellow → red → deleted)
+**Approach**: Use the `diff` npm package to generate **line-level diffs** between original and AI-generated text. Display changes grouped into independent "change groups" with per-change accept/reject:
+- **Red** = deleted/replaced lines (original)
+- **Green** = added/replacement lines (AI-generated)
+- **White** = unchanged lines (context)
+- **Change groups** = contiguous added/removed lines with their own Accept/Reject buttons
 
-**Deliverable**: After AI processing, user sees original text in red with AI suggestion in green below
+**Rationale**: 
+- The `diff` package is small (~20KB), pure JS, battle-tested, and handles all edge cases automatically
+- **Line-level diffing** (`diffLines()`) provides clean, readable diffs without word-level noise
+- **Independent change groups** give users granular control to accept/reject each change separately
+- Unchanged lines (white) provide context between change groups
+- Automatically handles: multiple changes, unchanged sections, additions-only, deletions-only
+- **Visual mockups**: See [`docs/ui-mockups.md`](ui-mockups.md) for detailed UI examples
 
-#### 4.2 User can click reject button to reject AI suggestion
-- [ ] Implement reject button that appears when AI suggestion is present
-- [ ] Add reject action (button click → revert red to original blue/yellow, delete green)
+**Technical Implementation**:
+```typescript
+import { diffLines } from 'diff';
+
+// Generate line-level diff between original and AI text
+const diff = diffLines(originalText, aiGeneratedText);
+
+// Group contiguous changes into change groups
+interface ChangeGroup {
+  id: string;
+  removed: string[];  // RED lines
+  added: string[];    // GREEN lines
+}
+
+// Each change group gets its own Accept/Reject buttons
+```
+
+#### 4.1 Implement diff-based text display with change groups
+- [ ] Install `diff` package: `pnpm add diff`
+- [ ] Install types: `pnpm add -D @types/diff`
+- [ ] Create utility function to generate **line-level diff** using `diffLines()`
+- [ ] Create utility function to group contiguous changes into "change groups"
+- [ ] Create utility function to convert diff output to text spans with change group metadata
+- [ ] Create ChangeGroup component with per-group Accept/Reject buttons
+- [ ] Update AI processing flow to generate line-level diff between original and AI text
+- [ ] Group contiguous changes into independent change groups
+- [ ] Convert diff output to text spans (red = removed lines, green = added lines, white = unchanged lines)
+- [ ] Handle yellow prompt text (should appear as removed/red in diff)
+- [ ] Render change groups with visual borders and labels ("Change 1", "Change 2", etc.)
+- [ ] Add Accept/Reject buttons to each change group
+- [ ] Display unchanged lines (white) between change groups for context
+- [ ] Test edge cases:
+  - All text changed (single change group: 100% red → 100% green)
+  - Minimal changes (small change groups with lots of white context)
+  - Only additions (change group with no red, just green)
+  - Only deletions (change group with just red, no green)
+  - Multiple separate changes (multiple change groups with white between)
+  - Yellow prompts removed (show as red, disappear on accept)
+  - Mixed accept/reject (accept Change 1, reject Change 2, accept Change 3)
+
+**Deliverable**: After AI processing, user sees line-level diff organized into independent change groups, each with Accept/Reject buttons
+
+#### 4.2 Implement per-change accept/reject
+- [ ] Implement Accept button per change group
+  - Clicking Accept on a change group: RED lines deleted, GREEN lines → WHITE
+  - Other change groups remain unchanged
+  - Change group disappears after acceptance
+- [ ] Implement Reject button per change group
+  - Clicking Reject on a change group: RED lines → revert to blue/yellow, GREEN lines deleted
+  - Other change groups remain unchanged
+  - Change group disappears after rejection
+- [ ] Handle mixed accept/reject scenarios (some groups accepted, others rejected)
+- [ ] Store original spans before diff so rejected groups can restore original text
 - [ ] Create smooth state transitions and animations
-- [ ] Position button appropriately in the UI
+- [ ] Update document state as change groups are resolved
 
-**Deliverable**: User can reject AI suggestions by clicking the reject button
+**Deliverable**: User can independently accept or reject each change group, with granular control over which AI suggestions to keep
 
-### Phase 5: Accept Workflow & Text Editing (Week 5)
+#### 4.3 Continue editing after accepting/rejecting changes
+- [ ] After all change groups are resolved, document returns to normal editing mode
+- [ ] Accepted text (white) can be edited (becomes blue when edited)
+- [ ] Handle edge case: If user edits white text, it becomes blue (new input)
+- [ ] Support multiple AI processing rounds on the same document
+- [ ] Add undo functionality for accept/reject actions (store previous state)
 
-#### 5.1 User can click accept button to accept AI suggestion
-- [ ] Implement accept button that appears when AI suggestion is present
-- [ ] Add accept action (button click → green becomes white, delete red)
-- [ ] Create smooth state transitions and animations
-- [ ] Add undo functionality for accept/reject actions
-- [ ] Handle multiple AI suggestions in one document
+**Deliverable**: Complete workflow supporting multiple rounds of AI processing with granular accept/reject
 
-**Deliverable**: User can accept AI suggestions by clicking the accept button, which makes green text become white
+### Phase 5: Polish & Optimization (Week 6)
 
-#### 5.2 User can select and edit text across all color states
+#### 5.1 User can select and edit text across all color states
 - [ ] Implement text selection with long press
 - [ ] Add cross-color selection support (excluding red text during processing)
 - [ ] Implement single tap for cursor positioning (blue/yellow/white text)
@@ -319,9 +373,7 @@ If user clicks the toggle button while cursor is on the first wrapped line, ALL 
 
 **Deliverable**: Complete text editing experience with selection and cursor positioning across all colors
 
-### Phase 6: Polish & Optimization (Week 6)
-
-#### 6.1 Haptic Feedback & Animations
+#### 5.2 Haptic Feedback & Animations
 - [ ] Add haptic feedback for toggle button press
 - [ ] Add haptic feedback for "Process with AI" button press
 - [ ] Add haptic feedback for accept button press
@@ -329,7 +381,7 @@ If user clicks the toggle button while cursor is on the first wrapped line, ALL 
 - [ ] Add smooth color transition animations for all state changes
 - [ ] Optimize animation performance for smooth 60fps experience
 
-#### 6.2 Final Testing & Bug Fixes
+#### 5.3 Final Testing & Bug Fixes
 - [ ] Comprehensive testing across all phases
 - [ ] Test on multiple devices (iOS, Android, web)
 - [ ] Performance testing and optimization

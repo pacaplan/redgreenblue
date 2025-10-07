@@ -41,15 +41,21 @@ The app transforms traditional note-taking by allowing users to write naturally 
 - User has full control over what is treated as content vs. instructions
 
 ### 3. AI Processing Phase (Triggered by "Process with AI" button)
-- **Blue text** → **Red** (marked for potential editing)
-- AI generates improved/edited version
-- AI-generated text appears **below** the red text in **green**
+- AI generates improved/edited version by comparing original text with AI output
+- Uses **line-level diff algorithm** to identify changes (via `diffLines()` from `diff` package)
+- Changes are grouped into independent "change groups" (contiguous added/removed lines)
+- **Deleted/replaced text** → **Red** (marked for removal)
+- **Added/replacement text** → **Green** (AI-generated, pending approval)
+- **Unchanged text** → **White** (kept as-is, provides context between change groups)
 - **Yellow text** (prompts) → **Red** (will be removed after processing)
 
 ### 4. User Decision Phase
-- User reviews AI suggestions
-- **Accept**: Click "Accept" button → green text becomes white, red text is deleted
-- **Reject**: Click "Reject" button → red text reverts to previous color (blue/yellow), green text disappears
+- User reviews AI suggestions grouped into independent "change groups"
+- Each change group has its own Accept/Reject buttons for granular control
+- **Accept** (per change group): Click "Accept" → green text in that group becomes white, red text deleted, other groups unaffected
+- **Reject** (per change group): Click "Reject" → red text in that group reverts to previous color (blue/yellow), green text deleted, other groups unaffected
+- User can mix and match: accept some changes, reject others
+- **Visual mockups**: See [`docs/ui-mockups.md`](ui-mockups.md) for detailed UI examples
 
 ## Interaction Controls
 
@@ -141,6 +147,16 @@ Button Press   Processing           Complete
 - **Timeout**: "Taking too long. Tap to try again."
 - **Recovery**: Failed text reverts to original color, buttons re-enabled
 
+## UI Mockups
+
+For detailed visual mockups showing line-level diff display with per-change accept/reject functionality, see **[`docs/ui-mockups.md`](ui-mockups.md)**.
+
+The mockups demonstrate:
+- How change groups are visually presented with borders and labels
+- Per-change Accept/Reject button placement
+- Unchanged text (white) providing context between change groups
+- Multiple scenarios: email improvement, shopping list organization, meeting notes
+
 ## Example User Flows
 
 ### 1. Shopping List Organization
@@ -151,16 +167,19 @@ Button Press   Processing           Complete
 4. **User clicks** "→ Mark as Prompt" button on the last line → Text turns **yellow**
 
 **AI Processing:**
-5. **User clicks "✨ Process with AI" button**: AI processes
-   - "milk" and "bananas" turn **red**
-   - "organize shopping list" turns **red**
-   - **Green text appears**:
+5. **User clicks "✨ Process with AI" button**: AI processes using line-level diff
+   - Original items and prompt removed (shown in **red**)
+   - Organized structure added (shown in **green**)
+   - Result displayed inline:
      ```
-     ## Dairy
+     [RED: milk]
+     [RED: bananas]
+     [RED: organize shopping list]
+     [GREEN: ## Dairy
      - [ ] milk
      
      ## Produce  
-     - [ ] bananas
+     - [ ] bananas]
      ```
 
 **User Decision:**
@@ -176,21 +195,21 @@ Button Press   Processing           Complete
 3. **User clicks** "→ Mark as Prompt" button on the last line → Text turns **yellow**
 
 **AI Processing:**
-4. **User clicks "✨ Process with AI" button**: AI processes
-   - Original email text turns **red**
-   - "make this more professional" turns **red**
-   - **Green text appears**:
+4. **User clicks "✨ Process with AI" button**: AI processes using line-level diff
+   - Prompt removed (shown in **red**)
+   - Changes shown inline with unchanged portions in **white**, deletions in **red**, additions in **green**:
      ```
-     Dear Sarah,
+     [RED: Hey] [GREEN: Dear] Sarah,
      
-     I hope this message finds you well. I'm writing to discuss the upcoming project deadline for [Project Name].
+     [WHITE: I] [RED: wanted to reach out about] [GREEN: hope this message finds you well. I'm writing to discuss] [WHITE: the] [GREEN: upcoming] [WHITE: project deadline] [RED: . We] [GREEN: for [Project Name].
      
-     Due to some technical challenges we've encountered, we may need to extend the deadline by a few days to ensure quality delivery. I wanted to give you advance notice so we can discuss any scheduling implications.
+     Due to some technical] [RED: issues we've been having] [GREEN: challenges we've encountered, we may need to] [RED: push it back] [GREEN: extend the deadline by] [WHITE: a few days] [GREEN: to ensure quality delivery. I wanted to give you advance notice so we can discuss any scheduling implications.
      
      Please let me know your availability to discuss this further.
      
      Best regards,
-     [Your name]
+     [Your name]]
+     [RED: make this more professional]
      ```
 
 **User Decision:**
