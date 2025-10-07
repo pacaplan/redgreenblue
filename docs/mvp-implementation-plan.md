@@ -10,8 +10,7 @@ This document outlines the implementation plan for a **functional UI prototype**
 - ✅ **Functional UI prototype** with all core interactions
 - ✅ **Expo-based mobile app** running locally
 - ✅ **Complete color system** (blue → yellow → red/green → white)
-- ✅ **Button-based controls** (color toggle, accept/reject actions)
-- ✅ **Swipe gesture recognition** (swipe up for AI processing)
+- ✅ **Button-based controls** (color toggle, AI processing, accept/reject actions)
 - ✅ **Text selection and editing** with cross-color support
 - ✅ **Stubbed AI processing** with realistic delays and mock responses
 - ✅ **Basic document persistence** (local storage only)
@@ -78,13 +77,12 @@ redgreenblue/
 │   ├── components/
 │   │   ├── TextEditor.tsx         # Main editor component
 │   │   ├── ColoredText.tsx        # Colored text rendering
-│   │   ├── GestureHandler.tsx     # Gesture recognition
+│   │   ├── ProcessAIButton.tsx    # AI processing button
 │   │   ├── ProcessingOverlay.tsx  # AI processing UI
 │   │   └── LoadingStates.tsx      # Loading indicators
 │   ├── services/
 │   │   ├── mockAI.ts              # Stubbed AI service
-│   │   ├── storage.ts             # Local persistence
-│   │   └── gestures.ts            # Gesture utilities
+│   │   └── storage.ts             # Local persistence
 │   ├── store/
 │   │   ├── documentStore.ts       # Main document state
 │   │   ├── aiStore.ts             # AI processing state
@@ -95,8 +93,7 @@ redgreenblue/
 │   │   └── constants.ts           # App constants
 │   └── types/
 │       ├── document.ts            # Document type definitions
-│       ├── colors.ts              # Color system types
-│       └── gestures.ts            # Gesture types
+│       └── colors.ts              # Color system types
 ```
 
 ## Implementation Phases
@@ -257,15 +254,17 @@ If user clicks the toggle button while cursor is on the first wrapped line, ALL 
 
 ### Phase 3: AI Invocation & Processing (Week 3)
 
-#### 3.1 User can swipe up to invoke AI processing and see loading states
-- [ ] Configure React Native Gesture Handler
-- [ ] Implement swipe up detection for AI processing
+#### 3.1 User can click "Process with AI" button to invoke AI processing and see loading states
+- [ ] Create "Process with AI" button component
+- [ ] Implement button visibility logic (show when document has blue or yellow text)
+- [ ] Add button positioning (fixed at bottom of screen or floating)
 - [ ] Create AI processing state machine (idle, processing, complete)
 - [ ] Add loading states with progress indicators
 - [ ] Implement pulsing animations during processing
 - [ ] Create processing overlay with realistic messages
+- [ ] Disable all buttons during AI processing
 
-**Deliverable**: User can swipe up and see AI processing begin with loading animation
+**Deliverable**: User can click "Process with AI" button and see AI processing begin with loading animation
 
 #### 3.2 AI processing completes and shows realistic mock responses
 - [ ] Create stubbed AI service with realistic delays (2-8 seconds)
@@ -314,8 +313,7 @@ If user clicks the toggle button while cursor is on the first wrapped line, ALL 
 - [ ] Implement text selection with long press
 - [ ] Add cross-color selection support (excluding red text during processing)
 - [ ] Implement single tap for cursor positioning (blue/yellow/white text)
-- [ ] Add gesture conflict resolution (selection vs swipes)
-- [ ] Disable gestures during selection mode
+- [ ] Add button state management during text selection
 - [ ] Create selection indicators and feedback
 - [ ] Handle editing white text (white → blue when edited)
 
@@ -325,6 +323,7 @@ If user clicks the toggle button while cursor is on the first wrapped line, ALL 
 
 #### 6.1 Haptic Feedback & Animations
 - [ ] Add haptic feedback for toggle button press
+- [ ] Add haptic feedback for "Process with AI" button press
 - [ ] Add haptic feedback for accept button press
 - [ ] Add haptic feedback for reject button press
 - [ ] Add smooth color transition animations for all state changes

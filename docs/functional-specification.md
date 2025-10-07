@@ -40,7 +40,7 @@ The app transforms traditional note-taking by allowing users to write naturally 
 - No automatic AI analysis or prompt detection
 - User has full control over what is treated as content vs. instructions
 
-### 3. AI Processing Phase (Triggered by swipe up)
+### 3. AI Processing Phase (Triggered by "Process with AI" button)
 - **Blue text** → **Red** (marked for potential editing)
 - AI generates improved/edited version
 - AI-generated text appears **below** the red text in **green**
@@ -51,18 +51,20 @@ The app transforms traditional note-taking by allowing users to write naturally 
 - **Accept**: Click "Accept" button → green text becomes white, red text is deleted
 - **Reject**: Click "Reject" button → red text reverts to previous color (blue/yellow), green text disappears
 
-## Gesture Controls
+## Interaction Controls
 
 ### Touch Interactions
 - **Single tap**: Position cursor (standard text editing behavior)
-- **Button controls**: Context-aware buttons appear for specific actions:
-  - **Toggle Button** (blue/yellow lines): "→ Mark as Prompt" or "→ Mark as Text" button appears after 500ms of cursor inactivity on blue or yellow text
-  - **Accept Button** (green text): "Accept" button appears when AI suggestion is present
-  - **Reject Button** (red text): "Reject" button appears when AI suggestion is present
 - **Three-finger tap**: Undo last action
 
-### Swipe Gestures
-- **Swipe up**: Invoke AI processing
+### Button Controls
+Context-aware buttons appear for specific actions:
+- **Toggle Button** (blue/yellow lines): "→ Mark as Prompt" or "→ Mark as Text" button appears after 500ms of cursor inactivity on blue or yellow text
+- **Process AI Button**: "✨ Process with AI" button appears at bottom of screen when document contains blue or yellow text
+- **Accept Button** (green text): "Accept" button appears when AI suggestion is present
+- **Reject Button** (red text): "Reject" button appears when AI suggestion is present
+
+### Swipe Gestures (Future)
 - **Swipe down**: Navigate to settings screen
 - **Swipe left**: Enter "pretty view" (formatted markdown, read-only)
 
@@ -101,19 +103,19 @@ The system uses button-based controls instead of tap-based actions:
    - **Button appearance**: Smooth fade-in after 500ms of cursor inactivity
    - **Button styling**: Color-coded to match the action (yellow for prompts, blue for text)
 
-### Gesture Conflict Resolution
-- **Selection Priority**: When text is selected, swipe gestures are disabled
+### Interaction Conflict Resolution
+- **Selection Priority**: When text is selected, all buttons except the text editing controls remain visible
 - **Long Press Detection**: System distinguishes between:
   - Long press (0.5s) → Text selection mode
-  - Swipe up → AI processing (only when no selection)
-- **Clear Selection**: Tap empty area to clear selection and re-enable gestures
-- **Selection Indicators**: Clear visual feedback shows when selection mode is active
+  - Button press → Specific action (toggle, AI processing, accept, reject)
+- **Clear Selection**: Tap empty area to clear selection
 - **Button Hiding**: Toggle button automatically hides when cursor moves or user types
+- **Process AI Button**: Always visible at bottom when applicable (not affected by cursor position)
 
 ## AI Processing States
 
 ### Loading States
-- **Immediate Feedback**: Swipe up triggers instant visual confirmation
+- **Immediate Feedback**: Button press triggers instant visual confirmation
 - **Processing Indicator**: Subtle animation on text being processed
 - **Progress States**:
   - **Analyzing** (0-2s): "AI is reading your text..."
@@ -123,21 +125,21 @@ The system uses button-based controls instead of tap-based actions:
 ### Visual Processing Feedback
 - **Blue/Yellow Text**: Gentle pulsing animation during processing
 - **Loading Overlay**: Translucent overlay with progress indicator
-- **Gesture Blocking**: All gestures disabled during AI processing
-- **Cancel Option**: Tap anywhere to cancel AI processing (if taking >5s)
+- **Button Blocking**: All buttons disabled during AI processing
+- **Cancel Option**: Tap "Cancel" button to cancel AI processing (if taking >5s)
 
 ### Processing States
 ```
 [BLUE TEXT] → [BLUE TEXT + PULSE] → [RED TEXT] + [GREEN TEXT BELOW]
      ↓              ↓                    ↓
-  Swipe Up    Processing           Complete
+Button Press   Processing           Complete
 ```
 
 ### Error States
 - **Network Error**: "Connection lost. Tap to retry."
 - **AI Error**: "AI unavailable. Try again in a moment."
 - **Timeout**: "Taking too long. Tap to try again."
-- **Recovery**: Failed text reverts to original color, gestures re-enabled
+- **Recovery**: Failed text reverts to original color, buttons re-enabled
 
 ## Example User Flows
 
@@ -149,7 +151,7 @@ The system uses button-based controls instead of tap-based actions:
 4. **User clicks** "→ Mark as Prompt" button on the last line → Text turns **yellow**
 
 **AI Processing:**
-5. **User swipes up**: AI processes
+5. **User clicks "✨ Process with AI" button**: AI processes
    - "milk" and "bananas" turn **red**
    - "organize shopping list" turns **red**
    - **Green text appears**:
@@ -174,7 +176,7 @@ The system uses button-based controls instead of tap-based actions:
 3. **User clicks** "→ Mark as Prompt" button on the last line → Text turns **yellow**
 
 **AI Processing:**
-4. **User swipes up**: AI processes
+4. **User clicks "✨ Process with AI" button**: AI processes
    - Original email text turns **red**
    - "make this more professional" turns **red**
    - **Green text appears**:
@@ -205,7 +207,7 @@ The system uses button-based controls instead of tap-based actions:
 6. **User clicks** "→ Mark as Prompt" button on the last line → Text turns **yellow**
 
 **AI Processing:**
-7. **User swipes up**: AI processes
+7. **User clicks "✨ Process with AI" button**: AI processes
    - All previous text turns **red**
    - **Green text appears**:
      ```
@@ -251,7 +253,7 @@ This example demonstrates advanced scenarios including multiple AI interactions,
    chicken breast              [BLUE - new]
    ```
 
-2. **User swipes up**: AI processes without explicit prompt
+2. **User clicks "✨ Process with AI" button**: AI processes without explicit prompt
    - AI reasoning: "bread" and "chicken breast" are new grocery items that need categorization into the existing structure
    - "bread" and "chicken breast" turn **red**
    - **Green text appears**:
@@ -295,7 +297,7 @@ This example demonstrates advanced scenarios including multiple AI interactions,
    olive oil                   [BLUE - new item]
    ```
 
-5. **User swipes up**: AI processes complex mixed state
+5. **User clicks "✨ Process with AI" button**: AI processes complex mixed state
    - AI reasoning: 
      - "greek yogurt" (blue) → integrate into Dairy section
      - "organic apples" (blue) → integrate into Produce section  
@@ -355,7 +357,7 @@ This example demonstrates advanced scenarios including multiple AI interactions,
    tomato sauce               [BLUE - new item]
    ```
 
-8. **User swipes up**: AI processes prompt and mixed content
+8. **User clicks "✨ Process with AI" button**: AI processes prompt and mixed content
    - AI reasoning:
      - "organic milk" (blue, was edited from white) → affected by budget prioritization
      - "prioritize budget options" (yellow) → find cost-effective alternatives
@@ -449,11 +451,11 @@ To handle these complex scenarios, the AI system needs sophisticated reasoning c
 ### Essential Features
 1. **Plain text editor** with real-time color coding
 2. **Manual prompt marking** via button interface (no automatic detection)
-3. **Gesture-based AI invocation** (swipe up)
+3. **Button-based AI invocation** ("Process with AI" button)
 4. **Accept/reject editing workflow** via buttons
 5. **Full color state management** (blue→yellow→red/green→white)
 6. **Text selection and cursor positioning** with cross-color support
-7. **Gesture conflict resolution** (selection mode vs. swipe gestures)
+7. **Button interaction management** (context-aware button visibility and state)
 8. **AI processing feedback** (loading states, progress indicators, animations)
 9. **Basic error handling** (network failures, timeouts, recovery)
 10. **Document state persistence** (auto-save, session recovery)
@@ -471,15 +473,17 @@ To handle these complex scenarios, the AI system needs sophisticated reasoning c
 ### Strengths
 ✅ **Intuitive color system**: Clear visual feedback for different content states  
 ✅ **Natural writing flow**: Users can write normally without interruption  
-✅ **Simple gestures**: Familiar mobile interaction patterns  
+✅ **Simple button controls**: Discoverable and reliable interaction patterns  
 ✅ **Clear decision points**: Accept/reject workflow is straightforward via buttons
 ✅ **Flexible prompting**: Users can manually mark prompts using discoverable button interface
-✅ **Cross-platform reliability**: Button-based interactions work consistently on mobile, tablet, and web  
+✅ **Cross-platform reliability**: Button-based interactions work consistently on mobile, tablet, and web
+✅ **Feature discoverability**: All actions accessible via visible UI elements  
 
 ### Potential Concerns (Addressed in MVP)
 ⚠️ **Learning curve**: Users need to understand the color system and button interface
 ✅ **Manual prompt marking**: Button-based approach is discoverable and eliminates AI detection accuracy issues
-✅ **Button-based interactions**: More reliable than gesture-based tap detection across platforms
+✅ **Button-based interactions**: More reliable than gesture-based detection across platforms
+✅ **Feature discoverability**: All core actions visible via buttons
 ⚠️ **Visual complexity**: Multiple colors might feel overwhelming initially  
 ⚠️ **Text selection complexity**: Standard selection behavior unclear with colored text  
 ⚠️ **Error recovery**: Users need clear paths to fix AI mistakes  
@@ -488,18 +492,18 @@ To handle these complex scenarios, the AI system needs sophisticated reasoning c
 
 ### Recommendations for MVP
 1. **Start with core workflow**: Focus on blue→yellow→red/green→white progression
-2. **Include onboarding**: Brief tutorial explaining color system, button interface, and gestures
-3. **Provide feedback**: Clear visual/haptic feedback for button presses and gesture recognition
+2. **Include onboarding**: Brief tutorial explaining color system and button interface
+3. **Provide feedback**: Clear visual/haptic feedback for button presses
 4. **Error recovery**: Easy way to undo AI actions if they go wrong
 5. **Document size indicators**: Show character count approaching limits
 6. **Progressive disclosure**: Hide advanced features initially
-7. **Button discoverability**: Ensure toggle button appears reliably after cursor inactivity
+7. **Button discoverability**: Ensure buttons appear reliably based on document state
 
 ## Technical Considerations (High-Level)
 
 ### Core Requirements (Updated for MVP)
 - Real-time color coding system
-- Gesture recognition system  
+- Button-based interaction system  
 - AI integration for content generation only (no prompt detection)
 - State management for color transitions
 - Simple undo/redo functionality (5 operations max)
@@ -508,7 +512,7 @@ To handle these complex scenarios, the AI system needs sophisticated reasoning c
 
 ### Performance Targets (Updated for MVP)
 - Instant color feedback on typing
-- Smooth gesture recognition (no prompt detection latency)
+- Smooth button interactions with haptic feedback
 - AI processing: 2-15 seconds (within specified timeout)
 - Minimal latency for accept/reject actions
 - Document size validation: Real-time character counting
@@ -522,7 +526,7 @@ To handle these complex scenarios, the AI system needs sophisticated reasoning c
 
 ### Usability
 - Time to complete first successful AI interaction
-- Error rate in gesture recognition
+- Button interaction success rate
 - User retention after first week
 
 ### AI Performance (Updated for MVP)
@@ -533,10 +537,10 @@ To handle these complex scenarios, the AI system needs sophisticated reasoning c
 
 ## Conclusion
 
-This concept presents an innovative approach to AI-assisted writing that feels natural and intuitive. The color-coded system provides clear visual feedback, while gesture-based interactions align with modern mobile UX patterns. 
+This concept presents an innovative approach to AI-assisted writing that feels natural and intuitive. The color-coded system provides clear visual feedback, while button-based interactions provide reliable, discoverable controls across all platforms. 
 
-**MVP Approach:** By eliminating automatic prompt detection and implementing technical constraints, the MVP significantly reduces implementation complexity while maintaining the core innovative experience. Users gain full control over prompt marking, which eliminates AI accuracy concerns while preserving the magical feeling of AI-assisted writing.
+**MVP Approach:** By eliminating automatic prompt detection, using button-based controls instead of gestures, and implementing technical constraints, the MVP significantly reduces implementation complexity while maintaining the core innovative experience. Users gain full control over prompt marking and AI invocation, which eliminates AI accuracy concerns and interaction reliability issues while preserving the powerful feeling of AI-assisted writing.
 
-**Technical Feasibility:** With the simplified approach, the MVP has a high probability of success (~85%) and can be developed in 6 months rather than 12+ months. The constraints ensure predictable performance and user experience while providing a solid foundation for future enhancements.
+**Technical Feasibility:** With the simplified button-based approach, the MVP has a high probability of success (~90%) and can be developed in 6 months. The button-based interaction model ensures predictable, cross-platform performance and excellent user experience while providing a solid foundation for future enhancements.
 
-The concept makes strong sense from a usability perspective, particularly for users who want powerful AI assistance with transparent, user-controlled interactions. The key to success will be in the execution quality of the gesture interactions and the reliability of the simplified AI processing workflow.
+The concept makes strong sense from a usability perspective, particularly for users who want powerful AI assistance with transparent, discoverable, user-controlled interactions. The key to success will be in the execution quality of the button interactions and the reliability of the simplified AI processing workflow.
