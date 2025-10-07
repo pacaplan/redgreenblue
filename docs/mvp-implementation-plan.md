@@ -312,20 +312,20 @@ interface ChangeGroup {
 ```
 
 #### 4.1 Implement diff-based text display with change groups
-- [ ] Install `diff` package: `pnpm add diff`
-- [ ] Install types: `pnpm add -D @types/diff`
-- [ ] Create utility function to generate **line-level diff** using `diffLines()`
-- [ ] Create utility function to group contiguous changes into "change groups"
-- [ ] Create utility function to convert diff output to text spans with change group metadata
-- [ ] Create ChangeGroup component with per-group Accept/Reject buttons
-- [ ] Update AI processing flow to generate line-level diff between original and AI text
-- [ ] Group contiguous changes into independent change groups
-- [ ] Convert diff output to text spans (red = removed lines, green = added lines, white = unchanged lines)
-- [ ] Handle yellow prompt text (should appear as removed/red in diff)
-- [ ] Render change groups with visual borders and labels ("Change 1", "Change 2", etc.)
-- [ ] Add Accept/Reject buttons to each change group
-- [ ] Display unchanged lines (white) between change groups for context
-- [ ] Test edge cases:
+- [x] Install `diff` package: `pnpm add diff`
+- [x] Install types: `pnpm add -D @types/diff`
+- [x] Create utility function to generate **line-level diff** using `diffLines()`
+- [x] Create utility function to group contiguous changes into "change groups"
+- [x] Create utility function to convert diff output to text spans with change group metadata
+- [x] Create ChangeGroup component with per-group Accept/Reject buttons
+- [x] Update AI processing flow to generate line-level diff between original and AI text
+- [x] Group contiguous changes into independent change groups
+- [x] Convert diff output to text spans (red = removed lines, green = added lines, white = unchanged lines)
+- [x] Handle yellow prompt text (should appear as removed/red in diff)
+- [x] Render change groups with visual borders and labels ("Change 1", "Change 2", etc.)
+- [x] Add Accept/Reject buttons to each change group
+- [x] Display unchanged lines (white) between change groups for context
+- [x] Test edge cases:
   - All text changed (single change group: 100% red → 100% green)
   - Minimal changes (small change groups with lots of white context)
   - Only additions (change group with no red, just green)

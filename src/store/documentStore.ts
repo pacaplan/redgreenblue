@@ -24,6 +24,9 @@ const scheduleSave = (callback: () => void) => {
 export const useDocumentStore = create<DocumentState>((set, get) => ({
   text: '',
   textSpans: [],
+  originalSpans: [],
+  changeGroups: [],
+  isDiffMode: false,
   
   setText: (text: string) => {
     set({ text });
@@ -73,6 +76,112 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       return span;
     });
     get().setTextSpans(updatedSpans);
+  },
+  
+  setDiffMode: (diffSpans: TextSpan[], changeGroups, originalSpans: TextSpan[]) => {
+    const textFromSpans = diffSpans.map((span) => span.text).join('\n');
+    set({ 
+      isDiffMode: true,
+      textSpans: diffSpans,
+      changeGroups,
+      originalSpans,
+      text: textFromSpans,
+    });
+  },
+  
+  acceptChangeGroup: (groupId: string) => {
+    const { textSpans, changeGroups } = get();
+    const group = changeGroups.find(g => g.id === groupId);
+    
+    if (!group) return;
+    
+    // Remove this change group from the list
+    const updatedChangeGroups = changeGroups.filter(g => g.id !== groupId);
+    
+    // Convert this group's spans: delete red, convert green to white
+    const updatedSpans = textSpans
+      .filter(span => {
+        // Keep all spans except red ones from this group
+        if (span.changeGroupId === groupId && span.color === 'red') {
+          return false;
+        }
+        return true;
+      })
+      .map(span => {
+        // Convert green spans from this group to white
+        if (span.changeGroupId === groupId && span.color === 'green') {
+          return { ...span, color: 'white' as ColorState, changeGroupId: undefined };
+        }
+        return span;
+      });
+    
+    // If all change groups are resolved, exit diff mode
+    if (updatedChangeGroups.length === 0) {
+      get().exitDiffMode();
+    } else {
+      const textFromSpans = updatedSpans.map((span) => span.text).join('\n');
+      set({ 
+        textSpans: updatedSpans,
+        changeGroups: updatedChangeGroups,
+        text: textFromSpans,
+      });
+    }
+  },
+  
+  rejectChangeGroup: (groupId: string) => {
+    const { textSpans, changeGroups, originalSpans } = get();
+    const group = changeGroups.find(g => g.id === groupId);
+    
+    if (!group) return;
+    
+    // Remove this change group from the list
+    const updatedChangeGroups = changeGroups.filter(g => g.id !== groupId);
+    
+    // Convert this group's spans: delete green, restore red to original blue/yellow
+    const updatedSpans = textSpans
+      .filter(span => {
+        // Keep all spans except green ones from this group
+        if (span.changeGroupId === groupId && span.color === 'green') {
+          return false;
+        }
+        return true;
+      })
+      .map(span => {
+        // Convert red spans from this group back to original color
+        if (span.changeGroupId === groupId && span.color === 'red') {
+          // Find original color from originalSpans
+          const originalSpan = originalSpans.find(os => os.text === span.text);
+          return { ...span, color: (originalSpan?.color || 'blue') as ColorState, changeGroupId: undefined };
+        }
+        return span;
+      });
+    
+    // If all change groups are resolved, exit diff mode
+    if (updatedChangeGroups.length === 0) {
+      get().exitDiffMode();
+    } else {
+      const textFromSpans = updatedSpans.map((span) => span.text).join('\n');
+      set({ 
+        textSpans: updatedSpans,
+        changeGroups: updatedChangeGroups,
+        text: textFromSpans,
+      });
+    }
+  },
+  
+  exitDiffMode: () => {
+    const { textSpans } = get();
+    const textFromSpans = textSpans.map((span) => span.text).join('\n');
+    set({ 
+      isDiffMode: false,
+      changeGroups: [],
+      originalSpans: [],
+      text: textFromSpans,
+    });
+    scheduleSave(() => {
+      storage.saveTextSpans(textSpans);
+      storage.saveDocument(textFromSpans);
+    });
   },
 }));
 

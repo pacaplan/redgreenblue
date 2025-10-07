@@ -57,6 +57,18 @@ const detectContentType = (text: string): ContentType => {
 
 // Generate mock responses based on content type
 const generateShoppingResponse = (originalText: string): string => {
+  const lowerText = originalText.toLowerCase();
+  
+  // Check if this matches the mockup shopping list scenario
+  if (lowerText.includes('milk') && lowerText.includes('banana') && lowerText.includes('organize')) {
+    // Return the exact response from Mockup 2
+    return `## Dairy
+- [ ] milk
+
+## Produce
+- [ ] bananas`;
+  }
+  
   return `# Shopping List
 
 ## Groceries
@@ -73,11 +85,29 @@ const generateShoppingResponse = (originalText: string): string => {
 };
 
 const generateEmailResponse = (originalText: string): string => {
+  const lines = originalText.split('\n').filter(line => line.trim());
+  
+  // Check if this matches the mockup email scenario
+  const lowerText = originalText.toLowerCase();
+  if (lowerText.includes('sarah') && lowerText.includes('project') && lowerText.includes('professional')) {
+    // Return the exact response from Mockup 1
+    return `Dear Sarah,
+
+I hope this message finds you well.
+I wanted to reach out about the project deadline.
+Due to some technical challenges we've encountered, we may need to extend the deadline by a few days to ensure quality delivery.
+Please let me know your availability to discuss this further.
+
+Best regards,
+[Your name]`;
+  }
+  
+  // Generic professional email improvement
   return `Dear [Recipient],
 
 I hope this message finds you well. I wanted to reach out regarding the matter we discussed previously.
 
-${originalText.split('\n')[0] || 'I would like to follow up on our conversation'}
+${lines[0] || 'I would like to follow up on our conversation'}
 
 I look forward to hearing your thoughts on this.
 
@@ -86,6 +116,20 @@ Best regards,
 };
 
 const generateMeetingResponse = (originalText: string): string => {
+  const lowerText = originalText.toLowerCase();
+  
+  // Check if this matches the mockup meeting notes scenario
+  if (lowerText.includes('meeting is scheduled') && lowerText.includes('formal')) {
+    // Return the exact response from Mockup 3
+    return `The meeting is scheduled for tomorrow.
+Please bring your notes and laptop.
+We'll discuss the quarterly goals.
+Looking forward to the discussion.
+
+Best regards,
+Sarah`;
+  }
+  
   return `# Meeting Summary
 
 **Date:** ${new Date().toLocaleDateString()}

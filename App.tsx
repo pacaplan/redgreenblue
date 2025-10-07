@@ -2,11 +2,13 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, SafeAreaView, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TextEditor } from './src/components/TextEditor';
+import { DiffView } from './src/components/DiffView';
 import { ProcessAIButton } from './src/components/ProcessAIButton';
 import { ProcessingOverlay } from './src/components/ProcessingOverlay';
 import { useAIStore } from './src/store/aiStore';
 import { useDocumentStore } from './src/store/documentStore';
 import { processWithAI } from './src/services/mockAI';
+import { generateLineDiff } from './src/utils/diffUtils';
 
 export default function App() {
   const startProcessing = useAIStore((state) => state.startProcessing);
@@ -14,8 +16,13 @@ export default function App() {
   const setMessage = useAIStore((state) => state.setMessage);
   const completeProcessing = useAIStore((state) => state.completeProcessing);
   const textSpans = useDocumentStore((state) => state.textSpans);
+  const setDiffMode = useDocumentStore((state) => state.setDiffMode);
+  const isDiffMode = useDocumentStore((state) => state.isDiffMode);
   
   const handleProcessWithAI = async () => {
+    // Save original spans before processing
+    const originalSpans = [...textSpans];
+    
     // Start AI processing
     startProcessing();
     
@@ -49,7 +56,13 @@ export default function App() {
     // Complete processing with the generated suggestion
     completeProcessing(suggestion);
     
-    // Reset after a brief delay to show completion
+    // Generate line-level diff
+    const diffResult = generateLineDiff(originalSpans, suggestion);
+    
+    // Enter diff mode with the generated change groups
+    setDiffMode(diffResult.diffSpans, diffResult.changeGroups, originalSpans);
+    
+    // Reset AI state after a brief delay to show completion
     setTimeout(() => {
       useAIStore.getState().resetProcessing();
     }, 1500);
@@ -59,8 +72,14 @@ export default function App() {
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaView style={styles.container}>
         <View style={styles.container}>
-          <TextEditor />
-          <ProcessAIButton onPress={handleProcessWithAI} />
+          {isDiffMode ? (
+            <DiffView />
+          ) : (
+            <>
+              <TextEditor />
+              <ProcessAIButton onPress={handleProcessWithAI} />
+            </>
+          )}
           <ProcessingOverlay />
         </View>
         <StatusBar style="auto" />

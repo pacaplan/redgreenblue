@@ -6,6 +6,7 @@ export interface TextSpan {
   id: string;
   text: string;
   color: ColorState;
+  changeGroupId?: string; // Optional: ID of the change group this span belongs to (for diff mode)
 }
 
 // Color constants with exact hex values
@@ -29,18 +30,31 @@ export const UI_COLORS = {
 } as const;
 
 // Background colors for text spans (lighter highlights)
+// Per ui-mockups.md specification:
+// RED: Light red background (#FFE5E5) for deleted/replaced lines
+// GREEN: Light green background (#E5FFE5) for added/new lines  
+// WHITE: White/light gray background (#FFFFFF) for unchanged lines
+// BLUE: Light blue background (#E5F2FF) for original user input
+// YELLOW: Light yellow background (#FFF9E5) for user-marked prompts
 export const SPAN_COLORS = {
-  blue: '#D6ECFF',
-  yellow: '#FFF6CC',
-  red: '#FFE3E8',
-  green: '#DFF7E3',
+  blue: '#E5F2FF',
+  yellow: '#FFF9E5',
+  red: '#FFE5E5',
+  green: '#E5FFE5',
   white: UI_COLORS.transparent,
 } as const;
 
+// Text colors for text spans
+// Per ui-mockups.md specification:
+// RED: dark red text (#CC0000)
+// GREEN: dark green text (#007700)
+// BLUE: dark blue text (#0066CC)
+// YELLOW: dark yellow text (#B8860B)
+// WHITE: normal black text
 export const SPAN_TEXT_COLORS: Record<ColorState, string> = {
-  blue: UI_COLORS.textPrimary,
-  green: UI_COLORS.textPrimary,
-  red: UI_COLORS.textPrimary,
-  white: UI_COLORS.textSecondary,
-  yellow: UI_COLORS.textPrimary,
+  blue: '#0066CC',
+  green: '#007700',
+  red: '#CC0000',
+  white: UI_COLORS.textPrimary,
+  yellow: '#B8860B',
 };

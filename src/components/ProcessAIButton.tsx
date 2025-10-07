@@ -9,6 +9,7 @@ interface ProcessAIButtonProps {
 
 export const ProcessAIButton: React.FC<ProcessAIButtonProps> = ({ onPress }) => {
   const textSpans = useDocumentStore((state) => state.textSpans);
+  const isDiffMode = useDocumentStore((state) => state.isDiffMode);
   const aiState = useAIStore((state) => state.state);
   
   // Show button when document has blue or yellow text
@@ -16,8 +17,8 @@ export const ProcessAIButton: React.FC<ProcessAIButtonProps> = ({ onPress }) => 
     (span) => (span.color === 'blue' || span.color === 'yellow') && span.text.trim().length > 0
   );
   
-  // Hide button if no processable text or if AI is processing
-  if (!hasProcessableText || aiState === 'processing') {
+  // Hide button if no processable text, if AI is processing, or if in diff mode
+  if (!hasProcessableText || aiState === 'processing' || isDiffMode) {
     return null;
   }
   
