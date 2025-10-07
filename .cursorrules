@@ -48,6 +48,7 @@ Follow the implementation plan in `mvp-implementation-plan.md` step by step. The
 5. Use existing React Native/Expo patterns and components
 6. Keep all code simple and readable
 7. Test each increment before moving forward
+8. **NEVER create new documentation files** (*.md, README, guides, etc.) unless explicitly requested by the user
 
 ## Testing Protocol
 After completing each increment of work:

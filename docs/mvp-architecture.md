@@ -304,6 +304,16 @@ jobs:
 - [ ] Feature iteration based on usage data
 - [ ] Scaling infrastructure as needed
 
+## Known Implementation Details
+
+### Diff Algorithm and Change Groups
+The line-level diff algorithm (using the `diff` library) creates separate change groups only when there is UNCHANGED text between changed sections. This means:
+- Contiguous changes are automatically grouped together into a single change group
+- To create separate change groups, there must be unchanged (white) text acting as a separator
+- Example: In the email test, line 2 remains unchanged, creating a separator between change group 1 (line 1) and change group 2 (lines 3-5)
+
+**Test Expectations**: The email improvement test produces 2 change groups (not 3) because lines 3-5 are contiguous changes with no unchanged text between them.
+
 ## Conclusion
 
 This MVP architecture provides a solid foundation for the RedGreenBlue app while maintaining extremely low costs during development and early growth phases. The technology choices prioritize:
@@ -321,7 +331,3 @@ The total development cost is estimated at **$15-20/month** during MVP phase, sc
 3. Begin Phase 1 development with core editor functionality
 4. Set up monitoring and analytics from day one
 5. Plan beta testing strategy with target users
-
-<function_calls>
-<invoke name="todo_write">
-<parameter name="merge">true

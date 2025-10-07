@@ -1,15 +1,14 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useDocumentStore } from '../store/documentStore';
-import { ChangeGroupDisplay } from './ChangeGroupDisplay';
+import { ChangeGroupButtons } from './ChangeGroupDisplay';
 import { ColoredText } from './ColoredText';
-import { groupSpansByChangeGroup } from '../utils/diffUtils';
 import { UI_COLORS } from '../types/colors';
 
 /**
- * DiffView displays the diff results with change groups
- * Shows red (removed), green (added), and white (unchanged) text
- * Each change group has Accept/Reject buttons
+ * Minimal DiffView - renders like normal TextEditor
+ * Shows colored text spans with floating Accept/Reject buttons
+ * No headers, no borders, just text + minimal buttons
  */
 export const DiffView: React.FC = () => {
   const textSpans = useDocumentStore((state) => state.textSpans);
@@ -17,100 +16,87 @@ export const DiffView: React.FC = () => {
   const acceptChangeGroup = useDocumentStore((state) => state.acceptChangeGroup);
   const rejectChangeGroup = useDocumentStore((state) => state.rejectChangeGroup);
   
-  // Group spans by their change groups
-  const spanGroups = groupSpansByChangeGroup(textSpans, changeGroups);
-  
-  let changeNumber = 1;
+  // Calculate button positions for each change group
+  // Position below the last green line of each group
+  const buttonPositions = useMemo(() => {
+    const positions: Array<{ groupId: string; top: number }> = [];
+    const lineHeight = 26; // Must match ColoredText lineHeight
+    const paddingTop = 32; // Must match container padding
+    const buttonOffset = 8; // Gap below the line to avoid overlap (same as TextEditor)
+    
+    let currentLineIndex = 0;
+    const lastGreenLineForGroup: Record<string, number> = {};
+    
+    // Track which line each span is on and find last green line per group
+    textSpans.forEach((span) => {
+      if (span.changeGroupId && span.color === 'green') {
+        lastGreenLineForGroup[span.changeGroupId] = currentLineIndex;
+      }
+      currentLineIndex++;
+    });
+    
+    // Calculate button position for each change group (same logic as TextEditor)
+    changeGroups.forEach((group) => {
+      const lastGreenLine = lastGreenLineForGroup[group.id];
+      if (lastGreenLine !== undefined) {
+        // Position below the last green line
+        // Same formula as TextEditor: padding + (lineIndex + 1) * lineHeight + offset
+        const topPosition = paddingTop + ((lastGreenLine + 1) * lineHeight) + buttonOffset;
+        positions.push({ groupId: group.id, top: topPosition });
+      }
+    });
+    
+    return positions;
+  }, [textSpans, changeGroups]);
   
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Review AI Changes</Text>
-        <Text style={styles.subHeaderText}>
-          Accept or reject each change independently
-        </Text>
-      </View>
+    <View style={styles.container}>
+      {/* Render all text spans like normal editor */}
+      <ColoredText
+        spans={textSpans}
+        style={styles.text}
+      />
       
-      {spanGroups.map((spanGroup, index) => {
-        if (spanGroup.changeGroup) {
-          // This is a change group - render with accept/reject buttons
-          const currentChangeNumber = changeNumber;
-          changeNumber++;
-          
-          return (
-            <ChangeGroupDisplay
-              key={spanGroup.changeGroup.id}
-              changeGroup={spanGroup.changeGroup}
-              spans={spanGroup.spans}
-              changeNumber={currentChangeNumber}
+      {/* Floating Accept/Reject buttons for each change group */}
+      {changeGroups.map((group) => {
+        const position = buttonPositions.find(p => p.groupId === group.id);
+        if (!position) return null;
+        
+        return (
+          <View
+            key={group.id}
+            style={[styles.buttonsWrapper, { top: position.top }]}
+          >
+            <ChangeGroupButtons
+              changeGroup={group}
               onAccept={acceptChangeGroup}
               onReject={rejectChangeGroup}
             />
-          );
-        } else {
-          // This is unchanged text (white) - render without buttons
-          return (
-            <View key={`unchanged-${index}`} style={styles.unchangedSection}>
-              <ColoredText
-                spans={spanGroup.spans}
-                style={styles.unchangedText}
-              />
-            </View>
-          );
-        }
+          </View>
+        );
       })}
-      
-      {changeGroups.length === 0 && (
-        <View style={styles.noChangesContainer}>
-          <Text style={styles.noChangesText}>All changes have been reviewed!</Text>
-        </View>
-      )}
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: UI_COLORS.background,
-  },
-  contentContainer: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  header: {
-    marginBottom: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#CCC',
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#333',
-    marginBottom: 4,
-  },
-  subHeaderText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  unchangedSection: {
-    marginVertical: 4,
-  },
-  unchangedText: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: 'monospace',
-    color: '#666',
-  },
-  noChangesContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
     paddingVertical: 32,
-    alignItems: 'center',
+    position: 'relative',
   },
-  noChangesText: {
-    fontSize: 16,
-    color: '#4CAF50',
-    fontWeight: '600',
+  text: {
+    color: UI_COLORS.textPrimary,
+    fontFamily: 'monospace',
+    fontSize: 18,
+    lineHeight: 26,
+  },
+  buttonsWrapper: {
+    position: 'absolute',
+    right: 16,
+    zIndex: 10,
   },
 });
 
