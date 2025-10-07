@@ -8,9 +8,18 @@ export const ProcessingOverlay: React.FC = () => {
   const message = useAIStore((state) => state.message);
   
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const checkmarkScale = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   
   useEffect(() => {
     if (aiState === 'processing') {
+      // Fade in overlay
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+      
       // Create pulsing animation
       Animated.loop(
         Animated.sequence([
@@ -28,31 +37,68 @@ export const ProcessingOverlay: React.FC = () => {
           }),
         ])
       ).start();
+      
+      // Reset checkmark
+      checkmarkScale.setValue(0);
+    } else if (aiState === 'complete') {
+      // Stop pulsing and show checkmark with bounce
+      pulseAnim.stopAnimation(() => {
+        pulseAnim.setValue(1);
+      });
+      
+      Animated.spring(checkmarkScale, {
+        toValue: 1,
+        tension: 100,
+        friction: 5,
+        useNativeDriver: true,
+      }).start();
     } else {
+      // Fade out when idle
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+      
       pulseAnim.setValue(1);
+      checkmarkScale.setValue(0);
     }
-  }, [aiState, pulseAnim]);
+  }, [aiState, pulseAnim, checkmarkScale, fadeAnim]);
   
-  if (aiState !== 'processing') {
+  if (aiState !== 'processing' && aiState !== 'complete') {
     return null;
   }
   
   return (
-    <View style={styles.overlay}>
+    <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
       <View style={styles.container}>
-        <Animated.View style={[styles.iconContainer, { transform: [{ scale: pulseAnim }] }]}>
-          <Text style={styles.icon}>✨</Text>
-        </Animated.View>
+        {aiState === 'processing' && (
+          <>
+            <Animated.View style={[styles.iconContainer, { transform: [{ scale: pulseAnim }] }]}>
+              <Text style={styles.icon}>✨</Text>
+            </Animated.View>
+            
+            <Text style={styles.message}>{message}</Text>
+            
+            <View style={styles.progressBarContainer}>
+              <View style={[styles.progressBar, { width: `${progress}%` }]} />
+            </View>
+            
+            <Text style={styles.progressText}>{Math.round(progress)}%</Text>
+          </>
+        )}
         
-        <Text style={styles.message}>{message}</Text>
-        
-        <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBar, { width: `${progress}%` }]} />
-        </View>
-        
-        <Text style={styles.progressText}>{Math.round(progress)}%</Text>
+        {aiState === 'complete' && (
+          <>
+            <Animated.View style={[styles.iconContainer, { transform: [{ scale: checkmarkScale }] }]}>
+              <Text style={[styles.icon, styles.checkmark]}>✓</Text>
+            </Animated.View>
+            
+            <Text style={[styles.message, styles.completeMessage]}>{message}</Text>
+          </>
+        )}
       </View>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -111,5 +157,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     fontWeight: '500',
+  },
+  checkmark: {
+    color: '#10B981', // Green color for success
+    fontSize: 64,
+    fontWeight: 'bold',
+  },
+  completeMessage: {
+    color: '#10B981', // Green color for success
   },
 });

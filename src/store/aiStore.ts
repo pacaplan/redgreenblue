@@ -8,8 +8,9 @@ interface AIStore {
   state: AIProcessingState;
   progress: number; // 0-100
   message: string;
+  suggestion: string | null; // The AI-generated suggestion
   startProcessing: () => void;
-  completeProcessing: () => void;
+  completeProcessing: (suggestion: string) => void;
   resetProcessing: () => void;
   setProgress: (progress: number) => void;
   setMessage: (message: string) => void;
@@ -19,20 +20,23 @@ export const useAIStore = create<AIStore>((set) => ({
   state: 'idle',
   progress: 0,
   message: '',
+  suggestion: null,
   
   startProcessing: () => {
     set({ 
       state: 'processing', 
       progress: 0, 
-      message: 'Preparing AI processing...' 
+      message: 'Preparing AI processing...',
+      suggestion: null
     });
   },
   
-  completeProcessing: () => {
+  completeProcessing: (suggestion: string) => {
     set({ 
       state: 'complete', 
       progress: 100, 
-      message: 'Processing complete!' 
+      message: 'Processing complete!',
+      suggestion
     });
   },
   
@@ -40,7 +44,8 @@ export const useAIStore = create<AIStore>((set) => ({
     set({ 
       state: 'idle', 
       progress: 0, 
-      message: '' 
+      message: '',
+      suggestion: null
     });
   },
   

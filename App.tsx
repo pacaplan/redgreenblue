@@ -5,12 +5,15 @@ import { TextEditor } from './src/components/TextEditor';
 import { ProcessAIButton } from './src/components/ProcessAIButton';
 import { ProcessingOverlay } from './src/components/ProcessingOverlay';
 import { useAIStore } from './src/store/aiStore';
+import { useDocumentStore } from './src/store/documentStore';
+import { processWithAI } from './src/services/mockAI';
 
 export default function App() {
   const startProcessing = useAIStore((state) => state.startProcessing);
   const setProgress = useAIStore((state) => state.setProgress);
   const setMessage = useAIStore((state) => state.setMessage);
   const completeProcessing = useAIStore((state) => state.completeProcessing);
+  const textSpans = useDocumentStore((state) => state.textSpans);
   
   const handleProcessWithAI = async () => {
     // Start AI processing
@@ -24,6 +27,10 @@ export default function App() {
       'Finalizing suggestions...',
     ];
     
+    // Start the actual AI processing (runs in background)
+    const aiPromise = processWithAI(textSpans);
+    
+    // Animate progress while AI is processing
     for (let i = 0; i < messages.length; i++) {
       setMessage(messages[i]);
       const progressStart = (i / messages.length) * 100;
@@ -36,8 +43,11 @@ export default function App() {
       }
     }
     
-    // Complete processing
-    completeProcessing();
+    // Wait for AI to complete and get the suggestion
+    const suggestion = await aiPromise;
+    
+    // Complete processing with the generated suggestion
+    completeProcessing(suggestion);
     
     // Reset after a brief delay to show completion
     setTimeout(() => {
